@@ -243,16 +243,19 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            PauseScript.Instance.TogglePause();
+        }
+
+        if (PauseScript.isPaused)
+            return; // Skip the rest of the Update method if the game is paused
+        
         UpdateScore();
 
         UpdateFPS();
         
         UpdatePlayerMovement();
-
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            PauseScript.Instance.TogglePause();
-        }
     }
 
     #endregion
