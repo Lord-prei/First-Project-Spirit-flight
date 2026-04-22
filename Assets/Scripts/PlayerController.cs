@@ -6,6 +6,10 @@ using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
+    // --------------------------------------------------------------------------- Variables
+
+    #region Public Variables
+
     // Singleton instance for easy access from other scripts (e.g., Coin)
     public static PlayerController Instance;
 
@@ -14,10 +18,10 @@ public class PlayerController : MonoBehaviour
         Instance = this;
     }
 
-    public  float   maxSpeed        = 5f;
-    public  float   thrustForce     = 1f;
-    public  float   pointsPerSecond = 10f;
-    public  bool    deathEnabled    = true;
+    public float maxSpeed = 5f;
+    public float thrustForce = 1f;
+    public float pointsPerSecond = 10f;
+    public bool deathEnabled = true;
 
     public GameObject BoosterFlame;
     public GameObject GameBorder;
@@ -33,25 +37,40 @@ public class PlayerController : MonoBehaviour
 
     public System.Action OnDeath;
 
-    private float   elapsedTime = 0f;
-    private float   fpsTimer    = 0f;
-    private int     score       = 0;
-    private int     money       = 0;
-    private int     currentHighScore;
-    bool            isThrusting = false;
-    private Label   scoreLabel;
-    private Label   highScoreLabelText;
-    private Label   highScoreLabel;
-    private Label   moneyLabel;
-    private Label   newBest;
-    private Label   fpsLabel;
-    private Button  restartButton;
+    #endregion
+
+    // --------------------------------------------------------------------------- Private Variables
+
+    #region Private Variables
+
+    private float elapsedTime = 0f;
+    private float fpsTimer = 0f;
+    private int score = 0;
+    private int money = 0;
+    private int currentHighScore;
+    bool isThrusting = false;
+    private Label scoreLabel;
+    private Label highScoreLabelText;
+    private Label highScoreLabel;
+    private Label moneyLabel;
+    private Label newBest;
+    private Label fpsLabel;
+    private Button restartButton;
     private ParticleSystem.EmissionModule emission;
     Camera cam;
 
     Rigidbody2D rb;
 
-    // functions
+    #endregion
+
+    // --------------------------------------------------------------------------- Functions
+
+    #region Functions
+
+    // -------------------------------------------------- UI Update
+
+    #region UI Update
+
     void UpdateScore()
     {
         // Update the elapsed time and calculate the score based on the points per second
@@ -60,15 +79,47 @@ public class PlayerController : MonoBehaviour
 
         // Update the score display in the UI
         scoreLabel.text = $"{score}";
-        
+
         //Debug.Log($"Elapsed Time: {score}");
     }
-    void UpdatePlayerMovment()
+    public void UpdateMoney(int amount)
+    {
+        if (amount != 0)
+        {
+            money = PlayerPrefs.GetInt("Money", 0);
+            //Debug.Log($"Current Money before update: {money}");
+            money += amount;
+            //Debug.Log($"Money updated by {amount}, new total: {money}");
+            PlayerPrefs.SetInt("Money", money);
+            PlayerPrefs.Save();
+        }
+
+        //Debug.Log($"Current Money: {money}");
+
+        moneyLabel.text = $"{money} Coins";
+    }
+    void UpdateFPS()
+    {
+        fpsTimer += Time.deltaTime;
+        if (fpsTimer >= 0.5f) // Update FPS every 0.5 seconds
+        {
+            fpsLabel.text = $"{Mathf.RoundToInt(1f / Time.deltaTime)} FPS";
+            fpsTimer = 0f;
+        }
+    }
+
+    #endregion
+
+    // -------------------------------------------------- Player Stuff
+
+    #region Player Stuff
+
+    void UpdatePlayerMovement()
     {
         if (Mouse.current.leftButton.isPressed)
         {
             if (Mouse.current.leftButton.wasPressedThisFrame)
-            { 
+            {
                 isThrusting = true;
 
                 // SFX starting sound
@@ -119,30 +170,29 @@ public class PlayerController : MonoBehaviour
             BoosterFlame.SetActive(false);
         }
     }
-    public void UpdateMoney(int amount)
-    {
-        if (amount != 0)
-        {
-            money = PlayerPrefs.GetInt("Money", 0);
-            //Debug.Log($"Current Money before update: {money}");
-            money += amount;
-            //Debug.Log($"Money updated by {amount}, new total: {money}");
-            PlayerPrefs.SetInt("Money", money);
-            PlayerPrefs.Save();
-        }
-
-        //Debug.Log($"Current Money: {money}");
-
-        moneyLabel.text = $"{money} Coins";
-    }
-    void ReloadScene()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
     void Die()
     {
         OnDeath?.Invoke();
     }
+
+    #endregion
+
+    // -------------------------------------------------- Scene Management
+
+    #region Scene Management
+
+    void ReloadScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    #endregion
+
+    #endregion Functions
+
+    // --------------------------------------------------------------------------- Start and Update
+
+    #region Unity Lifecycle Methods
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -154,23 +204,23 @@ public class PlayerController : MonoBehaviour
 
         // Get references to UI elements
         scoreLabel          = ScoreUIDocument.rootVisualElement.Q<Label>("ScoreDisplay");
+        fpsLabel            = ScoreUIDocument.rootVisualElement.Q<Label>("FPSDisplay");
+        moneyLabel          = ScoreUIDocument.rootVisualElement.Q<Label>("CoinDisplay");
         highScoreLabelText  = RestartUIDocument.rootVisualElement.Q<Label>("HighScoreLabel");
         highScoreLabel      = RestartUIDocument.rootVisualElement.Q<Label>("HighScore");
-        moneyLabel          = ScoreUIDocument.rootVisualElement.Q<Label>("CoinDisplay");
         newBest             = RestartUIDocument.rootVisualElement.Q<Label>("NewBest");
         restartButton       = RestartUIDocument.rootVisualElement.Q<Button>("RestartButton");
-        money = PlayerPrefs.GetInt("Money", 0);
-        UpdateMoney(0); // Initialize money display
 
         // Hide the restart button and high score display at the start of the game
-        restartButton.style.display         = DisplayStyle.None;
-        highScoreLabelText.style.display    = DisplayStyle.None;
-        highScoreLabel.style.display        = DisplayStyle.None;
-        newBest.style.display               = DisplayStyle.None;
+        restartButton       .style.display = DisplayStyle.None;
+        highScoreLabelText  .style.display = DisplayStyle.None;
+        highScoreLabel      .style.display = DisplayStyle.None;
+        newBest             .style.display = DisplayStyle.None;
 
-        // Get reference to the FPS label in the UI
-        fpsLabel = ScoreUIDocument.rootVisualElement.Q<Label>("FPSDisplay");
-
+        // Initialize money from PlayerPrefs and update the money display
+        money = PlayerPrefs.GetInt("Money", 0);
+        UpdateMoney(0); // Initialize money display
+        
         // Add a click event listener to the restart button to reload the scene when clicked
         restartButton.clicked += ReloadScene;
 
@@ -185,6 +235,7 @@ public class PlayerController : MonoBehaviour
         // Cache the main camera reference
         cam = Camera.main;
 
+        // Set target frame rate and disable vSync for consistent performance
         Application.targetFrameRate = -1;  // -1 = unlimited
         QualitySettings.vSyncCount = 0;    // vSync muss aus sonst wird targetFrameRate
     }
@@ -194,16 +245,16 @@ public class PlayerController : MonoBehaviour
     {
         UpdateScore();
 
-
-        fpsTimer += Time.deltaTime;
-        if (fpsTimer >= 0.5f) // Update FPS every 0.5 seconds
-        {
-            fpsLabel.text = $"{Mathf.RoundToInt(1f / Time.deltaTime)} FPS";
-            fpsTimer = 0f;
-        }
-
-            UpdatePlayerMovment();
+        UpdateFPS();
+        
+        UpdatePlayerMovement();
     }
+
+    #endregion
+
+    // --------------------------------------------------------------------------- Collision and Trigger Events
+
+    #region Collision and Trigger Events
 
     void OnCollisionEnter2D(Collision2D collision)
     {
@@ -220,7 +271,7 @@ public class PlayerController : MonoBehaviour
                 Destroy(gameObject);
                 Die();
 
-                // Destroy the fame border
+                // Destroy the frame border
                 Destroy(GameBorder);
 
                 // Stop all SFX and VFX
@@ -246,14 +297,13 @@ public class PlayerController : MonoBehaviour
                 Debug.Log($"Player fucking died to: {collision.gameObject.name}, final score: {score}, current high score: {currentHighScore}");
 
                 // Show UI for restart and high score
-                highScoreLabelText.style.display = DisplayStyle.Flex;
-                highScoreLabel.style.display = DisplayStyle.Flex;
-                highScoreLabel.text = $"{currentHighScore}";
-                restartButton.style.display = DisplayStyle.Flex;
+                highScoreLabelText  .style.display  = DisplayStyle.Flex;
+                highScoreLabel      .style.display  = DisplayStyle.Flex;
+                restartButton       .style.display  = DisplayStyle.Flex;
+                highScoreLabel      .text           = $"{currentHighScore}";
             }
         }
     }
-    
     System.Collections.IEnumerator PlayThrustLoop()
     {
         // Wait for the starting sound to finish before playing the loop
@@ -265,5 +315,9 @@ public class PlayerController : MonoBehaviour
             ThrustLoop.Play();
         }
     }
+
+    #endregion
+
+    // --------------------------------------------------------------------------- End of Script
 }
 

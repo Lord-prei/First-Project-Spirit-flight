@@ -4,25 +4,72 @@ using UnityEngine.UIElements;
 
 public class Obstacle : MonoBehaviour
 {
-    public float    minSize         = 0.5f;
-    public float    maxSize         = 2f;
+    // --------------------------------------------------------------------------- Variables
 
-    public float    minSpeed        = 50f;
-    public float    maxSpeed        = 250f;
+    #region Public Variables
 
-    public float    baseMass        = 1f;
+    public float minSize = 0.5f;
+    public float maxSize = 2f;
 
-    public float    maxSpinSpeed    = 10f;
+    public float minSpeed = 50f;
+    public float maxSpeed = 250f;
 
-    public float    particleScaleFactor             = 1f;
-    public float    destructionEffectScaleFactor    = 1f;
-    public float    collisionVelocityThreshold      = 8f;
+    public float baseMass = 1f;
+
+    public float maxSpinSpeed = 10f;
+
+    public float particleScaleFactor = 1f;
+    public float destructionEffectScaleFactor = 1f;
+    public float collisionVelocityThreshold = 8f;
 
     public GameObject collisionEffectPrefab;
     public GameObject destructionEffectPrefab;
-    Rigidbody2D rb;
+
+    #endregion
+
+    // --------------------------------------------------------------------------- Private Variables
+
+    #region Private Variables
 
     private float weight;
+
+    Rigidbody2D rb;
+
+    #endregion
+
+    // --------------------------------------------------------------------------- Functions
+
+    #region Functions
+
+    // -------------------------------------------------- XXX
+
+    #region Cat1
+
+    // Code for Functions Layer 1
+
+    #endregion
+
+    // -------------------------------------------------- XXX
+
+    #region Cat2
+
+    // Code for Functions Layer 2
+
+    #endregion
+
+    // -------------------------------------------------- XXX
+
+    #region Cat3
+
+    // Code for Functions Layer 3
+
+    #endregion
+
+    #endregion Functions
+
+    // --------------------------------------------------------------------------- Start and Update
+
+    #region Unity Lifecycle Methods
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -38,7 +85,7 @@ public class Obstacle : MonoBehaviour
         // Calculate mass based on size and base mass
         float mass = baseMass * xScale * yScale;
         rb.mass = mass;
-        weight  = mass;
+        weight = mass;
 
         // Randomly apply torque to the obstacle
         float torque = Random.Range(-maxSpinSpeed, maxSpinSpeed);
@@ -58,6 +105,12 @@ public class Obstacle : MonoBehaviour
     {
 
     }
+
+    #endregion
+
+    // --------------------------------------------------------------------------- Collision and Trigger Events
+
+    #region Collision and Trigger Events
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -82,10 +135,14 @@ public class Obstacle : MonoBehaviour
             Debug.Log($"Obstacle destroyed at {contactPoint} with velocity magnitude: {velocityMagnitude}");
             Destroy(destructionEffect, 7f);
         }
-        
+
         //Debug.Log($"Collision detected at {contactPoint} with velocity magnitude: {velocityMagnitude}");
 
         // Destroy the collision effect after a short delay to prevent cluttering the scene
         Destroy(collisonEffect, 0.5f);
     }
+
+    #endregion
+
+    // --------------------------------------------------------------------------- End of Script
 }

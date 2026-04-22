@@ -899,7 +899,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HBSpawner
   spawnInterval: 5
   spawnRadiusMax: 8
-  graceRadius: 3
+  graceRadius: 4
   minX: -12
   maxX: 12
   minY: -6
@@ -1335,7 +1335,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: b9aa95ebc6fc34d45bc54952efd9bf11, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.2
+  m_Volume: 0.08
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -1650,7 +1650,7 @@ MonoBehaviour:
   maxX: 12
   minY: -6
   maxY: 6
-  coinPrefab: {fileID: 859864434712946891, guid: 9b034556eda5839459c213a48dded6ee, type: 3}
+  coinPrefab: {fileID: 679348209858270442, guid: 03f2aa0fa17c77f448f7b042ecad6182, type: 3}
   player: {fileID: 1318147300}
 --- !u!1 &1543383495
 GameObject:
@@ -2423,7 +2423,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 5655dc838f4119047911e9070c18417d, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.2
+  m_Volume: 0.08
   m_Pitch: 1
   Loop: 0
   Mute: 0

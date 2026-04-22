@@ -4,6 +4,10 @@ using UnityEngine.Rendering;
 
 public class CoinSpawner : MonoBehaviour
 {
+    // --------------------------------------------------------------------------- Variables
+
+    #region Public Variables
+
     //public int      maxObstacles    = 100;
     public float spawnInterval = 5f;
     public float spawnIntervalMin = 4f;
@@ -19,11 +23,25 @@ public class CoinSpawner : MonoBehaviour
     public GameObject coinPrefab;
     public GameObject player;
 
+    #endregion
+
+    // --------------------------------------------------------------------------- Private Variables
+
+    #region Private Variables
+
     private float elapsedTime = 0f;
     //private int     obstacleCount   = 1;
 
+    #endregion
 
-    // functions
+    // --------------------------------------------------------------------------- Functions
+
+    #region Functions
+
+    // -------------------------------------------------- Spawning
+
+    #region Spawning
+
     void StopSpawning()
     {
         this.enabled = false;
@@ -46,6 +64,30 @@ public class CoinSpawner : MonoBehaviour
             return false;
         }
     }
+
+    #endregion
+
+    // -------------------------------------------------- XXX
+
+    #region Cat2
+
+    // Code for Functions Layer 2
+
+    #endregion
+
+    // -------------------------------------------------- XXX
+
+    #region Cat3
+
+    // Code for Functions Layer 3
+
+    #endregion
+
+    #endregion Functions
+
+    // --------------------------------------------------------------------------- Start and Update
+
+    #region Unity Lifecycle Methods
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -87,4 +129,16 @@ public class CoinSpawner : MonoBehaviour
             //Debug.Log($"Spawning coin at: {spawnPos}");
         }
     }
+
+    #endregion
+
+    // --------------------------------------------------------------------------- Collision and Trigger Events
+
+    #region Collision and Trigger Events
+
+
+
+    #endregion
+
+    // --------------------------------------------------------------------------- End of Script
 }

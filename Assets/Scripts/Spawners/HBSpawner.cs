@@ -3,25 +3,43 @@ using UnityEngine.Rendering;
 
 public class HBSpawner : MonoBehaviour
 {
-    //public int      maxObstacles    = 100;
-    public float    spawnInterval   = 5f;
-    public float    spawnRadiusMax  = 6f;
-    public float    graceRadius     = 3f;
+    // --------------------------------------------------------------------------- Variables
 
-    public float    minX            = -11f;
-    public float    maxX            = 11f;
-    public float    minY            = -5f;
-    public float    maxY            = 5f;
+    #region Public Variables
+
+    //public int      maxObstacles    = 100;
+    public float spawnInterval = 5f;
+    public float spawnRadiusMax = 6f;
+    public float graceRadius = 3f;
+
+    public float minX = -11f;
+    public float maxX = 11f;
+    public float minY = -5f;
+    public float maxY = 5f;
 
     public GameObject obstaclePrefab;
     public GameObject player;
 
-    private float   elapsedTime     = 0f;
-    private int     fiveSecondTimer = 0;
+    #endregion
+
+    // --------------------------------------------------------------------------- Private Variables
+
+    #region Private Variables
+
+    private float elapsedTime = 0f;
+    private int fiveSecondTimer = 0;
     //private int     obstacleCount   = 1;
 
+    #endregion
 
-    // functions
+    // --------------------------------------------------------------------------- Functions
+
+    #region Functions
+
+    // -------------------------------------------------- Spawning
+
+    #region Spawning
+
     void StopSpawning()
     {
         this.enabled = false;
@@ -44,6 +62,30 @@ public class HBSpawner : MonoBehaviour
             return false;
         }
     }
+
+    #endregion
+
+    // -------------------------------------------------- XXX
+
+    #region Cat2
+
+    // Code for Functions Layer 2
+
+    #endregion
+
+    // -------------------------------------------------- XXX
+
+    #region Cat3
+
+    // Code for Functions Layer 3
+
+    #endregion
+
+    #endregion Functions
+
+    // --------------------------------------------------------------------------- Start and Update
+
+    #region Unity Lifecycle Methods
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -76,7 +118,7 @@ public class HBSpawner : MonoBehaviour
 
                 spawnPos = playerPos + new Vector3(x, y, 0f);
             }
-            while   (
+            while (
                     spawnPos.x < minX || spawnPos.x > maxX ||
                     spawnPos.y < minY || spawnPos.y > maxY
                     );
@@ -86,4 +128,14 @@ public class HBSpawner : MonoBehaviour
             //Debug.Log($"BOUNDS: X[{minX},{maxX}] Y[{minY},{maxY}]");
         }
     }
+
+    #endregion
+
+    // --------------------------------------------------------------------------- Collision and Trigger Events
+
+    #region Collision and Trigger Events
+
+    #endregion
+
+    // --------------------------------------------------------------------------- End of Script
 }
