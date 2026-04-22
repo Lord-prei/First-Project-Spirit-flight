@@ -248,6 +248,11 @@ public class PlayerController : MonoBehaviour
         UpdateFPS();
         
         UpdatePlayerMovement();
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            PauseScript.Instance.TogglePause();
+        }
     }
 
     #endregion
