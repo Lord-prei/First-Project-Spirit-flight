@@ -220,9 +220,12 @@ public class PlayerController : MonoBehaviour
         // Initialize money from PlayerPrefs and update the money display
         money = PlayerPrefs.GetInt("Money", 0);
         UpdateMoney(0); // Initialize money display
-        
+
         // Add a click event listener to the restart button to reload the scene when clicked
-        restartButton.clicked += ReloadScene;
+        restartButton.clicked += () =>
+        {
+            ReloadScene();
+        };
 
         // Initialize the thrust VFX emission rate to 0 at the start of the game
         emission = thrustVFX.emission;

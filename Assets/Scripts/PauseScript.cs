@@ -17,7 +17,9 @@ public class PauseScript : MonoBehaviour
 
     public static bool isPaused = false;
 
-    public UIDocument PausMenuUI;
+    public UIDocument PauseMenuUI;
+    public UIDocument SettingsMenuUI;
+    public UIDocument ShopMenuUI;
 
     #endregion
 
@@ -25,7 +27,10 @@ public class PauseScript : MonoBehaviour
 
     #region Private Variables
 
-    // Private variables go here
+    private Button ButtonContinue;
+    private Button ButtonSettings;
+    private Button ButtonShop;
+    private Button ButtonRetard;
 
     #endregion
 
@@ -62,27 +67,29 @@ public class PauseScript : MonoBehaviour
     // -------------------------------------------------- UI Logic
 
     #region UI Logic
+
     void VisablePauseMenu(string what)
     {
         if (what == "show")
         {
-            PausMenuUI.rootVisualElement.style.display = DisplayStyle.Flex;
+            PauseMenuUI.rootVisualElement.style.display = DisplayStyle.Flex;
         }
         else if (what == "hide")
         {
-            PausMenuUI.rootVisualElement.style.display = DisplayStyle.None;
+            PauseMenuUI.rootVisualElement.style.display = DisplayStyle.None;
         }
     }
 
-    // Code for Functions Layer 2
-
     #endregion
 
-    // -------------------------------------------------- XXX
+    // -------------------------------------------------- Scene Management
 
-    #region Cat3
+    #region Scene Management
 
-    // Code for Functions Layer 3
+    void ReloadScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
 
     #endregion
 
@@ -95,6 +102,32 @@ public class PauseScript : MonoBehaviour
     void Start()
     {
         VisablePauseMenu("hide");
+        ButtonContinue  = PauseMenuUI.rootVisualElement.Q<Button>("ButtonContinue");
+        ButtonSettings  = PauseMenuUI.rootVisualElement.Q<Button>("ButtonSettings");
+        ButtonShop      = PauseMenuUI.rootVisualElement.Q<Button>("ButtonShop");
+        ButtonRetard    = PauseMenuUI.rootVisualElement.Q<Button>("ButtonRestart");
+
+        ButtonContinue.clicked += () =>
+        {
+            TogglePause();
+        };
+
+        ButtonSettings.clicked += () =>
+        {
+            Debug.Log("Settings Button Clicked");
+        };
+
+        ButtonShop.clicked += () =>
+        {
+            Debug.Log("Shop Button Clicked");
+        };
+
+        ButtonRetard.clicked += () =>
+        {
+            ReloadScene();
+            Time.timeScale = 1f;
+            TogglePause();
+        };
     }
 
     void Update()
