@@ -18,8 +18,6 @@ public class PauseScript : MonoBehaviour
     public static bool isPaused = false;
 
     public UIDocument PauseMenuUI;
-    public UIDocument SettingsMenuUI;
-    public UIDocument ShopMenuUI;
 
     #endregion
 
@@ -57,9 +55,15 @@ public class PauseScript : MonoBehaviour
         isPaused = !isPaused;
 
         if (isPaused)
+        {
             Pause();
+            VisablePauseMenu("show");
+        }
         else
+        {
             Resume();
+            VisablePauseMenu("hide");
+        }
     }
 
     #endregion
@@ -114,32 +118,22 @@ public class PauseScript : MonoBehaviour
 
         ButtonSettings.clicked += () =>
         {
-            Debug.Log("Settings Button Clicked");
+            VisablePauseMenu("hide");
+            SettingsScript.Instance.CallSettings();
         };
 
         ButtonShop.clicked += () =>
         {
-            Debug.Log("Shop Button Clicked");
+            VisablePauseMenu("hide");
+            ShopScript.Instance.CallShop();
         };
 
         ButtonRetard.clicked += () =>
         {
             ReloadScene();
-            Time.timeScale = 1f;
             TogglePause();
+            Time.timeScale = 1f;
         };
-    }
-
-    void Update()
-    {
-        if (isPaused)
-        {
-            VisablePauseMenu("show");
-        }
-        else
-        {
-            VisablePauseMenu("hide");
-        }
     }
 
     #endregion

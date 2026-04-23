@@ -1,0 +1,3 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Label text="Shop Menu" name="ShopTXT" picking-mode="Ignore" style="top: 10%; align-self: center; font-size: 50px; color: rgb(255, 255, 255); -unity-font-style: bold;"/>
+</ui:UXML>
