@@ -388,9 +388,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4afe9e1208d31dd42b49428a59db4f99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SettingsScript
-  MasterVolume: 80
-  MusicVolume: 30
-  SFXVolume: 20
+  MasterVolume: 0.8
+  MusicVolume: 0.4
+  SFXVolume: 0.2
   SettingsMenuUI: {fileID: 1767072362}
   mixer: {fileID: 24100000, guid: d96cf2e01a95c32448c8782b87f19c7e, type: 2}
 --- !u!1 &289628986
