@@ -388,11 +388,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4afe9e1208d31dd42b49428a59db4f99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SettingsScript
-  MasterVolume: 80
-  MusicVolume: 30
-  SFXVolume: 20
   SettingsMenuUI: {fileID: 1767072362}
-  mixer: {fileID: 24100000, guid: d96cf2e01a95c32448c8782b87f19c7e, type: 2}
 --- !u!1 &289628986
 GameObject:
   m_ObjectHideFlags: 0
@@ -581,11 +577,11 @@ AudioSource:
   m_GameObject: {fileID: 361336302}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: -7794959187446417280, guid: d96cf2e01a95c32448c8782b87f19c7e, type: 2}
+  OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 66af61e72aa5d0b439a0c2edc2c691b9, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.15
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -1493,11 +1489,11 @@ AudioSource:
   m_GameObject: {fileID: 1211545499}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: -6428638926056916975, guid: d96cf2e01a95c32448c8782b87f19c7e, type: 2}
+  OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: b9aa95ebc6fc34d45bc54952efd9bf11, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.08
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -2802,11 +2798,11 @@ AudioSource:
   m_GameObject: {fileID: 1953223464}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: -6428638926056916975, guid: d96cf2e01a95c32448c8782b87f19c7e, type: 2}
+  OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 5655dc838f4119047911e9070c18417d, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.08
   m_Pitch: 1
   Loop: 0
   Mute: 0

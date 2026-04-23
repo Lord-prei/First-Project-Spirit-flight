@@ -82,7 +82,10 @@ public class ShopScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if (!PauseScript.isPaused)
+        {
+            VisableShopMenu("hide");
+        }
     }
 
     #endregion

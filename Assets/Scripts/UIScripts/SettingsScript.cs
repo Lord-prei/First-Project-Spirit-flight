@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.Audio;
 
 public class SettingsScript : MonoBehaviour
 {
@@ -14,7 +15,12 @@ public class SettingsScript : MonoBehaviour
         Instance = this;
     }
 
+    public float MasterVolume = 0.2f;
+    public float MusicVolume = 0.1f;
+    public float SFXVolume = 0.1f;
+
     public UIDocument SettingsMenuUI;
+    public AudioMixer mixer;
 
     #endregion
 
@@ -22,7 +28,10 @@ public class SettingsScript : MonoBehaviour
 
     #region Private Variables
 
-    // Private variables go here
+    private Button ButtonRAP;
+    private Slider SliderVolume;
+    private Slider SliderMusic;
+    private Slider SliderSFX;
 
     #endregion
 
@@ -59,11 +68,37 @@ public class SettingsScript : MonoBehaviour
 
     #endregion
 
-    // -------------------------------------------------- XXX
+    // -------------------------------------------------- Volume Control
 
-    #region Cat3
+    #region Volume Control
 
-    // Code for Functions Layer 3
+    float LinearToDb(float value)
+    {
+        float linear = Mathf.Pow(value, 2.0f);
+        linear = Mathf.Clamp(linear, 0.0001f, 1f);
+        return 20f * Mathf.Log10(linear);
+    }
+
+    void SetAllVolume()
+    {
+        MasterVolume = PlayerPrefs.GetFloat("MasterVolume", 0);
+        MusicVolume = PlayerPrefs.GetFloat("MusicVolume", 0);
+        SFXVolume = PlayerPrefs.GetFloat("SFXVolume", 0);
+
+        mixer.SetFloat("MasterVolume", LinearToDb(MasterVolume));
+        mixer.SetFloat("MusicVolume", LinearToDb(MusicVolume));
+        mixer.SetFloat("SFXVolume", LinearToDb(SFXVolume));
+    }
+
+    void LoadAllVolume()
+    {         
+        MasterVolume = PlayerPrefs.GetFloat("MasterVolume", 1f);
+        MusicVolume = PlayerPrefs.GetFloat("MusicVolume", 1f);
+        SFXVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
+        SliderVolume.SetValueWithoutNotify(MasterVolume);
+        SliderMusic.SetValueWithoutNotify(MusicVolume);
+        SliderSFX.SetValueWithoutNotify(SFXVolume);
+    }
 
     #endregion
 
@@ -77,12 +112,49 @@ public class SettingsScript : MonoBehaviour
     void Start()
     {
         VisableSettingsMenu("hide");
+
+        ButtonRAP       = SettingsMenuUI.rootVisualElement.Q<Button>("ButtonRAP");
+        SliderVolume    = SettingsMenuUI.rootVisualElement.Q<Slider>("SliderVolume");
+        SliderMusic     = SettingsMenuUI.rootVisualElement.Q<Slider>("SliderMusic");
+        SliderSFX       = SettingsMenuUI.rootVisualElement.Q<Slider>("SliderSFX");
+
+        LoadAllVolume();
+
+        ButtonRAP.clicked += () =>
+        {
+            Debug.Log("RAP Button Pressed");
+        };
+
+        SliderVolume.RegisterValueChangedCallback(evt =>
+        {
+            MasterVolume = evt.newValue;
+            PlayerPrefs.SetFloat("MasterVolume", MasterVolume);
+            SetAllVolume();
+        });
+
+        SliderMusic.RegisterValueChangedCallback(evt =>
+        {
+            MusicVolume = evt.newValue;
+            PlayerPrefs.SetFloat("MusicVolume", MusicVolume);
+            SetAllVolume();
+        });
+
+        SliderSFX.RegisterValueChangedCallback(evt =>
+        {
+            SFXVolume = evt.newValue;
+            PlayerPrefs.SetFloat("SFXVolume", SFXVolume);
+            SetAllVolume();
+        });
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        if (!PauseScript.isPaused)
+        {
+            VisableSettingsMenu("hide");
+            PlayerPrefs.Save();
+        }
     }
 
     #endregion
