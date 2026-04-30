@@ -52,7 +52,7 @@ public class Coin : MonoBehaviour
         {
             return true;
         }
-        Debug.Log($"ERROR MAX PERCENTAGE NOT 100%, ITS: {totalPercentage}");
+        //Debug.Log($"ERROR MAX PERCENTAGE NOT 100%, ITS: {totalPercentage}");
         return false;
     }
     void CoinValueRNG()

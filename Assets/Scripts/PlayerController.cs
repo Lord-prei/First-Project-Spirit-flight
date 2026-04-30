@@ -16,6 +16,25 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         Instance = this;
+        // Input system setup
+        input = new InputSys();
+    }
+
+    void OnEnable()
+    {
+        input.UI.Enable();
+        input.UI.ToggleMenu.performed += OnToggleMenu;
+    }
+
+    void OnDisable()
+    {
+        input.UI.Disable();
+        input.UI.ToggleMenu.performed -= OnToggleMenu;
+    }
+
+    private void OnToggleMenu(InputAction.CallbackContext ctx)
+    {
+        PauseScript.Instance.TogglePause();
     }
 
     public float maxSpeed = 5f;
@@ -58,6 +77,9 @@ public class PlayerController : MonoBehaviour
     private Button restartButton;
     private ParticleSystem.EmissionModule emission;
     Camera cam;
+
+    // Input system variables
+    private InputSys input;
 
     Rigidbody2D rb;
 
@@ -246,11 +268,6 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            PauseScript.Instance.TogglePause();
-        }
-
         if (PauseScript.isPaused)
             return; // Skip the rest of the Update method if the game is paused
         

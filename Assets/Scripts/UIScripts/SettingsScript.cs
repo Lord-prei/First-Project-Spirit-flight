@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.Audio;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class SettingsScript : MonoBehaviour
 {
@@ -13,6 +15,34 @@ public class SettingsScript : MonoBehaviour
     void Awake()
     {
         Instance = this;
+
+        VisableSettingsMenu("hide");
+        // Input system setup
+        input = new InputSys();
+    }
+
+    void OnEnable()
+    {
+        input.UI.Enable();
+
+        input.UI.ToggleMenu.performed += OnToggleMenu;
+    }
+
+    void OnDisable()
+    {
+        input.UI.Disable();
+
+        input.UI.ToggleMenu.performed -= OnToggleMenu;
+    }
+
+    private void OnToggleMenu(InputAction.CallbackContext ctx)
+    {
+        if (PauseScript.isPaused)
+        {
+            VisableSettingsMenu("hide");
+            SaveAllVolume();
+            PlayerPrefs.Save();
+        }
     }
 
     public float MasterVolume = 0.2f;
@@ -33,6 +63,12 @@ public class SettingsScript : MonoBehaviour
     private Slider SliderMusic;
     private Slider SliderSFX;
 
+    // For startup check
+    int isFirstStart;
+
+    // Input system variables
+    private InputSys input;
+
     #endregion
 
     // --------------------------------------------------------------------------- Functions
@@ -46,6 +82,10 @@ public class SettingsScript : MonoBehaviour
     public void CallSettings()
     {
         VisableSettingsMenu("show");
+    }
+    void ReloadScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     #endregion
@@ -74,30 +114,30 @@ public class SettingsScript : MonoBehaviour
 
     float LinearToDb(float value)
     {
-        float linear = Mathf.Pow(value, 2.0f);
-        linear = Mathf.Clamp(linear, 0.0001f, 1f);
-        return 20f * Mathf.Log10(linear);
+        value = Mathf.Clamp01(value);
+        //Debug.Log($"Volume: {value} (dB: {Mathf.Lerp(-80f, 0f, value)})");
+        return Mathf.Lerp(-80f, 0f, value);
+        
     }
 
-    void SetAllVolume()
+    void SaveAllVolume()
     {
-        MasterVolume = PlayerPrefs.GetFloat("MasterVolume", 0);
-        MusicVolume = PlayerPrefs.GetFloat("MusicVolume", 0);
-        SFXVolume = PlayerPrefs.GetFloat("SFXVolume", 0);
-
-        mixer.SetFloat("MasterVolume", LinearToDb(MasterVolume));
-        mixer.SetFloat("MusicVolume", LinearToDb(MusicVolume));
-        mixer.SetFloat("SFXVolume", LinearToDb(SFXVolume));
+        PlayerPrefs.SetFloat("MasterVolume", MasterVolume);
+        PlayerPrefs.SetFloat("MusicVolume", MusicVolume);
+        PlayerPrefs.SetFloat("SFXVolume", SFXVolume);
     }
 
     void LoadAllVolume()
-    {         
+    {
         MasterVolume = PlayerPrefs.GetFloat("MasterVolume", 1f);
         MusicVolume = PlayerPrefs.GetFloat("MusicVolume", 1f);
         SFXVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
         SliderVolume.SetValueWithoutNotify(MasterVolume);
         SliderMusic.SetValueWithoutNotify(MusicVolume);
         SliderSFX.SetValueWithoutNotify(SFXVolume);
+        mixer.SetFloat("MasterVolume", LinearToDb(MasterVolume));
+        mixer.SetFloat("MusicVolume", LinearToDb(MusicVolume));
+        mixer.SetFloat("SFXVolume", LinearToDb(SFXVolume));
     }
 
     #endregion
@@ -111,61 +151,45 @@ public class SettingsScript : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        VisableSettingsMenu("hide");
+        ButtonRAP = SettingsMenuUI.rootVisualElement.Q<Button>("ButtonRAP");
+        SliderVolume = SettingsMenuUI.rootVisualElement.Q<Slider>("SliderVolume");
+        SliderMusic = SettingsMenuUI.rootVisualElement.Q<Slider>("SliderMusic");
+        SliderSFX = SettingsMenuUI.rootVisualElement.Q<Slider>("SliderSFX");
 
-        ButtonRAP       = SettingsMenuUI.rootVisualElement.Q<Button>("ButtonRAP");
-        SliderVolume    = SettingsMenuUI.rootVisualElement.Q<Slider>("SliderVolume");
-        SliderMusic     = SettingsMenuUI.rootVisualElement.Q<Slider>("SliderMusic");
-        SliderSFX       = SettingsMenuUI.rootVisualElement.Q<Slider>("SliderSFX");
+        isFirstStart = PlayerPrefs.GetInt("IsFirstStart", 1);
+        if (isFirstStart == 1)
+        {
+            SaveAllVolume();
+            PlayerPrefs.SetInt("IsFirstStart", 0);
+            Debug.Log("First start");
+        }
 
         LoadAllVolume();
 
         ButtonRAP.clicked += () =>
         {
-            Debug.Log("RAP Button Pressed");
+            PlayerPrefs.DeleteAll();
+            PauseScript.Instance.TogglePause();
+            ReloadScene();
         };
 
         SliderVolume.RegisterValueChangedCallback(evt =>
         {
             MasterVolume = evt.newValue;
-            PlayerPrefs.SetFloat("MasterVolume", MasterVolume);
-            SetAllVolume();
+            mixer.SetFloat("MasterVolume", LinearToDb(MasterVolume));
         });
 
         SliderMusic.RegisterValueChangedCallback(evt =>
         {
             MusicVolume = evt.newValue;
-            PlayerPrefs.SetFloat("MusicVolume", MusicVolume);
-            SetAllVolume();
+            mixer.SetFloat("MusicVolume", LinearToDb(MusicVolume));
         });
 
         SliderSFX.RegisterValueChangedCallback(evt =>
         {
             SFXVolume = evt.newValue;
-            PlayerPrefs.SetFloat("SFXVolume", SFXVolume);
-            SetAllVolume();
+            mixer.SetFloat("SFXVolume", LinearToDb(SFXVolume));
         });
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (!PauseScript.isPaused)
-        {
-            VisableSettingsMenu("hide");
-            PlayerPrefs.Save();
-        }
-    }
-
     #endregion
-
-    // --------------------------------------------------------------------------- Collision and Trigger Events
-
-    #region Collision and Trigger Events
-
-
-
-    #endregion
-
-    // --------------------------------------------------------------------------- End of Script
 }

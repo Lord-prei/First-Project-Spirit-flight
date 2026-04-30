@@ -97,7 +97,7 @@ public class Obstacle : MonoBehaviour
         rb.AddForce(direction * speed);
 
 
-        Debug.Log($"obstacle: {gameObject.name} with \nsize: \t\t{xScale} \nmass: \t{mass} \nspeed: \t{speed} \ntorque: \t{torque}");
+        //Debug.Log($"obstacle: {gameObject.name} with \nsize: \t\t{xScale} \nmass: \t{mass} \nspeed: \t{speed} \ntorque: \t{torque}");
     }
 
     // Update is called once per frame
@@ -132,7 +132,7 @@ public class Obstacle : MonoBehaviour
             float destructionEffectScale = weight * destructionEffectScaleFactor;
             destructionEffect.transform.localScale = Vector3.one * destructionEffectScale;
 
-            Debug.Log($"Obstacle destroyed at {contactPoint} with velocity magnitude: {velocityMagnitude}");
+            //Debug.Log($"Obstacle destroyed at {contactPoint} with velocity magnitude: {velocityMagnitude}");
             Destroy(destructionEffect, 7f);
         }
 
