@@ -169,4 +169,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9ac20bf7ac318248964f08241947e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coin
-  CoinSFX: {fileID: 5187808928657722137, guid: 57408d0b167435246bca2ac027ae9aab, type: 3}
+  coinSFXPrefab: {fileID: 2472555927403173821, guid: 348a5b5ad5d9b084f9883be1c34c5bd6, type: 3}

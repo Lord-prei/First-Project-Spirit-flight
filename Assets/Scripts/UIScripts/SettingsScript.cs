@@ -114,10 +114,13 @@ public class SettingsScript : MonoBehaviour
 
     float LinearToDb(float value)
     {
-        value = Mathf.Clamp01(value);
-        //Debug.Log($"Volume: {value} (dB: {Mathf.Lerp(-80f, 0f, value)})");
-        return Mathf.Lerp(-80f, 0f, value);
-        
+        //value = Mathf.Clamp01(value);
+        ////Debug.Log($"Volume: {value} (dB: {Mathf.Lerp(-80f, 0f, value)})");
+        //return Mathf.Lerp(-80f, 0f, value);
+        value = Mathf.Clamp(value, 0.0001f, 1f); // avoid log(0)
+        float dB = 20f * Mathf.Log10(value);
+        return dB;
+
     }
 
     void SaveAllVolume()
