@@ -1,16 +1,17 @@
+﻿using NUnit.Framework.Internal;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class ToDo : EditorWindow
 {
-    private int maxLayer = 5;
+    
 
     [MenuItem("Window/UI Toolkit/ToDo")]
     public static void ShowExample()
     {
         ToDo wnd = GetWindow<ToDo>();
-        wnd.titleContent = new GUIContent("ToDo");
+        wnd.titleContent = new GUIContent("To-Do");
     }
 
     class ToDoItemData
@@ -18,14 +19,44 @@ public class ToDo : EditorWindow
         public bool done;
         public string title;
         public string description;
-        public int Layer;
+        public bool desFolded;
 
         public override string ToString()
         {
-            return $"TodoItemData\ndone =\t{done}\ntitle =\t\t{title}\ndescr =\t{description}\nLayer =\t{Layer}";
+            return $"TodoItemData\ndone =\t{done}\ntitle =\t\t{title}\ndescr =\t{description}\ndesFolded =\t{desFolded}";
         }
     }
 
+    private VisualElement CreateHorizontalFoldout(ToDoItemData data)
+    {
+        // Create a new VisualElement to represent the horizontal foldout
+        VisualElement root = new VisualElement();
+        root.style.flexDirection = FlexDirection.Row;
+
+        Button foldoutButton = new Button();
+        ToggleFoldout(); // Set initial state
+        foldoutButton.clickable.clicked += () =>
+        {
+            ToggleFoldout();
+        };
+        
+
+        root.Add(foldoutButton);
+        
+
+        return root; // Ensure a VisualElement is returned to fix CS0161
+
+        void ToggleFoldout()
+        {
+            data.desFolded = !data.desFolded;
+            //change Symbol on button
+            if (data.desFolded)
+                foldoutButton.text = "▶"; // Folded symbol
+            else
+                foldoutButton.text = "▼"; // Unfolded symbol
+            //Debug.Log(data);
+        }
+    }
     private VisualElement CreateToDoItemElement(ToDoItemData data)
     {
         // Create a new VisualElement to represent the to-do item
@@ -52,27 +83,16 @@ public class ToDo : EditorWindow
             data.title = evt.newValue;
             //Debug.Log(data);
         });
-        
 
-        // Arrow buttons for changing the layer of the task
-        Button arrowLeft = new Button(() =>
+        TextField description = new TextField();
+        description.value = data.description;
+        description.style.flexGrow = 1;
+        description.multiline = true;
+        description.RegisterValueChangedCallback(evt =>
         {
-            if (data.Layer <= 1) return;
-            data.Layer--;
-            Debug.Log(data);
+            data.description = evt.newValue;
+            //Debug.Log(data);
         });
-        arrowLeft.text = "<";
-
-
-        // Arrow buttons for changing the layer of the task
-        Button arrowRight = new Button(() =>
-        {
-            if (data.Layer >= maxLayer) return;
-            data.Layer++;
-            row.Insert(data.Layer - 1, new Label("->"));
-            Debug.Log(data);
-        });
-        arrowRight.text = ">";
 
 
         // Button for deleting the task
@@ -82,12 +102,28 @@ public class ToDo : EditorWindow
         });
         deleteButton.text = "X";
 
+        // Description foldout
+        Foldout test = new Foldout();
+        test.text = "Description";
+        test.style.flexGrow = 1;
+        test.value = false;
+        test.RegisterValueChangedCallback(evt =>
+        {
+            data.desFolded = evt.newValue;
+            if (data.desFolded)
+                title.style.display = DisplayStyle.None;
+            else
+                title.style.display = DisplayStyle.Flex;
+            //Debug.Log(data);
+        });
 
         // Add the UI elements to the row
         row.Add(done);
         row.Add(title);
-        row.Add(arrowLeft);
-        row.Add(arrowRight);
+        
+        row.Add(test);
+        test.Add(description);
+
         row.Add(deleteButton);
 
         Debug.Log(data);
@@ -98,6 +134,7 @@ public class ToDo : EditorWindow
     public void CreateGUI()
     {
         VisualElement root = rootVisualElement;
+        ShowExample();
 
         Button addButton = new Button(() =>
         {
@@ -105,7 +142,7 @@ public class ToDo : EditorWindow
             initVal.done = false;
             initVal.title = $"New Task {rootVisualElement.childCount}";
             initVal.description = $"New Description {rootVisualElement.childCount}";
-            initVal.Layer = 1;
+            initVal.desFolded = false;
 
             root.Add(CreateToDoItemElement(initVal));
         });
@@ -113,5 +150,12 @@ public class ToDo : EditorWindow
 
         addButton.text = "Add Task";
         root.Add(addButton);
+
+        ToDoItemData test = new ToDoItemData();
+        test.done = false;
+        test.title = $"New Task {rootVisualElement.childCount}";
+        test.description = $"New Description {rootVisualElement.childCount}";
+        test.desFolded = false;
+        root.Add(CreateHorizontalFoldout(test));
     }
 }
