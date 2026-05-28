@@ -1,12 +1,12 @@
-﻿using NUnit.Framework.Internal;
+﻿using JetBrains.Annotations;
+using NUnit.Framework.Internal;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System;
 
 public class ToDo : EditorWindow
 {
-    
-
     [MenuItem("Window/UI Toolkit/ToDo")]
     public static void ShowExample()
     {
@@ -33,16 +33,42 @@ public class ToDo : EditorWindow
         VisualElement root = new VisualElement();
         root.style.flexDirection = FlexDirection.Row;
 
+        // Content of the foldout
+        VisualElement content = new VisualElement();
+        content.style.flexDirection = FlexDirection.Row;
+        content.style.flexGrow = 1;
+
+        // Description field for the task
+        TextField description = new TextField();
+        description.value = data.description;
+        description.style.flexDirection = FlexDirection.Row;
+        description.style.flexGrow = 1;
+        description.multiline = true;
+        description.RegisterValueChangedCallback(evt =>
+        {
+            data.description = evt.newValue;
+            //Debug.Log(data);
+        });
+
+        // Label for Description
+        Label descriptionLabel = new Label("Desc:");
+        descriptionLabel.style.unityTextAlign = TextAnchor.MiddleLeft;
+
+        // Foldout button
         Button foldoutButton = new Button();
-        ToggleFoldout(); // Set initial state
         foldoutButton.clickable.clicked += () =>
         {
             ToggleFoldout();
         };
-        
 
+        // Structure of object:
+        // -------------------- Root
         root.Add(foldoutButton);
-        
+        root.Add(content);
+        // --------------- Content
+        content.Add(descriptionLabel);
+        content.Add(description);
+
 
         return root; // Ensure a VisualElement is returned to fix CS0161
 
@@ -50,10 +76,16 @@ public class ToDo : EditorWindow
         {
             data.desFolded = !data.desFolded;
             //change Symbol on button
-            if (data.desFolded)
+            if (data.desFolded) //Folded
+            {
                 foldoutButton.text = "▶"; // Folded symbol
-            else
+                content.style.display = DisplayStyle.None; // Hide content
+            }
+            else // Unfolded
+            {
                 foldoutButton.text = "▼"; // Unfolded symbol
+                content.style.display = DisplayStyle.Flex; // Show content
+            }
             //Debug.Log(data);
         }
     }
@@ -84,16 +116,6 @@ public class ToDo : EditorWindow
             //Debug.Log(data);
         });
 
-        TextField description = new TextField();
-        description.value = data.description;
-        description.style.flexGrow = 1;
-        description.multiline = true;
-        description.RegisterValueChangedCallback(evt =>
-        {
-            data.description = evt.newValue;
-            //Debug.Log(data);
-        });
-
 
         // Button for deleting the task
         Button deleteButton = new Button(() =>
@@ -102,28 +124,17 @@ public class ToDo : EditorWindow
         });
         deleteButton.text = "X";
 
-        // Description foldout
-        Foldout test = new Foldout();
-        test.text = "Description";
-        test.style.flexGrow = 1;
-        test.value = false;
-        test.RegisterValueChangedCallback(evt =>
+        VisualElement foldOut = CreateHorizontalFoldout(data);
         {
-            data.desFolded = evt.newValue;
-            if (data.desFolded)
-                title.style.display = DisplayStyle.None;
-            else
-                title.style.display = DisplayStyle.Flex;
+            //Debug.Log("Foldout button clicked!");
             //Debug.Log(data);
-        });
+        };
+
 
         // Add the UI elements to the row
         row.Add(done);
         row.Add(title);
-        
-        row.Add(test);
-        test.Add(description);
-
+        row.Add(foldOut);
         row.Add(deleteButton);
 
         Debug.Log(data);
@@ -151,11 +162,6 @@ public class ToDo : EditorWindow
         addButton.text = "Add Task";
         root.Add(addButton);
 
-        ToDoItemData test = new ToDoItemData();
-        test.done = false;
-        test.title = $"New Task {rootVisualElement.childCount}";
-        test.description = $"New Description {rootVisualElement.childCount}";
-        test.desFolded = false;
-        root.Add(CreateHorizontalFoldout(test));
+        
     }
 }
