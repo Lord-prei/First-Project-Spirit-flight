@@ -20,7 +20,7 @@ public class Coin : MonoBehaviour
     int yellowCoinChance = 20;
     int blueCoinChance = 5;
 
-    public AudioSource CoinSFX;
+    public GameObject coinSFXPrefab;
 
     #endregion
 
@@ -114,12 +114,6 @@ public class Coin : MonoBehaviour
         rend = GetComponent<Renderer>();
         money = PlayerPrefs.GetInt("Money", 0);
         CoinValueRNG();
-}
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     #endregion
@@ -135,24 +129,25 @@ public class Coin : MonoBehaviour
             if (isCollected) return; // Prevent multiple collections
             isCollected = true;
 
-            PlayerController.Instance.UpdateMoney(moneyValue); // Increment money by 1
-
             money = PlayerPrefs.GetInt("Money", 0); // Get the updated money value
 
-            Debug.Log($"Coin collected!, Total Money: {money}");
+            //Debug.Log($"Coin collected!, Total Money: {money}");
 
             rend.enabled = false;
-            StartCoroutine(PlayCoinSounds(moneyValue));
+            StartCoroutine(CoinUpdater(moneyValue));
         }
     }
 
-    System.Collections.IEnumerator PlayCoinSounds(int count)
+    System.Collections.IEnumerator CoinUpdater(int count)
     {
         for (int i = 0; i < count; i++)
         {
-            AudioSource.PlayClipAtPoint(CoinSFX.clip, transform.position);
+            GameObject coinPickupSFX = Instantiate(coinSFXPrefab, coinSFXPrefab.transform.position, Quaternion.identity);
+            PlayerController.Instance.UpdateMoney(1); // Increment money by 1
             yield return new WaitForSeconds(0.05f);
+            Destroy(coinPickupSFX, 1f);
         }
+        
         Destroy(gameObject);
     }
 
