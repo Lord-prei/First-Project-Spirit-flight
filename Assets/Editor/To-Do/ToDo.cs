@@ -9,6 +9,9 @@ using UnityEngine.UIElements;
 using UnityEngine.WSA;
 using static UnityEngine.Rendering.DebugUI.Table;
 
+using Handling.UI;
+using Handling.Data;
+
 public class ToDo : EditorWindow
 {
     private bool editMode = true;
@@ -23,50 +26,7 @@ public class ToDo : EditorWindow
         wnd.titleContent = new GUIContent("To-Do"); // Set the title of the window
     }
 
-    // Data structure for button styling
-    class ButtonStyleData
-    {
-        public int width;
-        public int height;
-    }
-
-    // Data structure for a to-do item
-    class ToDoItemData
-    {
-        public bool     done;
-        public string   title;
-        public string   description;
-        public bool     desFolded;
-        public string   path = "root";
-
-        // Override ToString for easy debugging
-        public override string ToString()
-        {
-            return $"TodoItemData\ndone =\t{done}\ntitle =\t\t{title}\ndescr =\t{description}\ndesFolded =\t{desFolded}\npath =\t{path}";
-        }
-    }
-
-    // Data structure for a to-do folder
-    class ToDoFolderData
-    {
-        public string name;
-
-        public ToDoFolderData parent;
-        public List<ToDoFolderData> children = new List<ToDoFolderData>();
-
-        // UI reference (important bridge)
-        public VisualElement ui;
-    }
-
-    // Method to change the style of a button based on the provided data
-    private Button ChangeButtonStyle(Button button, ButtonStyleData data)
-    {
-        button.style.width = Length.Pixels(data.width);
-        button.style.height = Length.Pixels(data.height);
-        button.style.alignContent = Align.Center;
-
-        return button;
-    }
+    
 
     private void PrintFolderTree(ToDoFolderData node, int depth = 0)
     {
@@ -131,7 +91,7 @@ public class ToDo : EditorWindow
         // Foldout button
         Button foldoutButton = new Button();
         foldoutButton.name = "foldoutButton";
-        foldoutButton = ChangeButtonStyle(foldoutButton, buttonData);
+        foldoutButton = DataHandler.ChangeButtonStyle(foldoutButton, buttonData);
 
         foldoutButton.style.backgroundColor =
             editMode ? Color.darkGray : StyleKeyword.Null;
@@ -227,7 +187,7 @@ public class ToDo : EditorWindow
         deleteButton.name = "deleteButton";
         deleteButton.text = "X";
         deleteButton.style.marginLeft = Length.Auto(); // Push the delete button to the right end of the row
-        deleteButton = ChangeButtonStyle(deleteButton, buttonData);
+        deleteButton = DataHandler.ChangeButtonStyle(deleteButton, buttonData);
 
 
 
@@ -252,7 +212,7 @@ public class ToDo : EditorWindow
         });
         button_Up.name = "ButtonUp";
         button_Up.text = "▲";
-        button_Up = ChangeButtonStyle(button_Up, buttonData);
+        button_Up = DataHandler.ChangeButtonStyle(button_Up, buttonData);
 
         // DOWN
         Button button_Down = new Button(() =>
@@ -261,7 +221,7 @@ public class ToDo : EditorWindow
         });
         button_Down.name = "ButtonDown";
         button_Down.text = "▼";
-        button_Down = ChangeButtonStyle(button_Down, buttonData);
+        button_Down = DataHandler.ChangeButtonStyle(button_Down, buttonData);
 
         // LEFT
         Button button_Left = new Button(() =>
@@ -270,7 +230,7 @@ public class ToDo : EditorWindow
         });
         button_Left.name = "ButtonLeft";
         button_Left.text = "◀";
-        button_Left = ChangeButtonStyle(button_Left, buttonData);
+        button_Left = DataHandler.ChangeButtonStyle(button_Left, buttonData);
 
         // RIGHT
         Button button_Right = new Button(() =>
@@ -279,7 +239,7 @@ public class ToDo : EditorWindow
         });
         button_Right.name = "ButtonRight";
         button_Right.text = "▶";
-        button_Right = ChangeButtonStyle(button_Right, buttonData);
+        button_Right = DataHandler.ChangeButtonStyle(button_Right, buttonData);
 
         EditButtons.Add(button_Up);
         EditButtons.Add(button_Down);
@@ -328,7 +288,7 @@ public class ToDo : EditorWindow
         deleteButton.name = "deleteButton";
         deleteButton.text = "X";
         deleteButton.style.marginLeft = Length.Auto(); // Push the delete button to the right end of the row
-        deleteButton = ChangeButtonStyle(deleteButton, buttonData);
+        deleteButton = DataHandler.ChangeButtonStyle(deleteButton, buttonData);
 
         VisualElement childrenContainer = new VisualElement();
         childrenContainer.name = "ChildrenContainer";
@@ -354,7 +314,7 @@ public class ToDo : EditorWindow
         });
         button_Up.name = "ButtonUp";
         button_Up.text = "▲";
-        button_Up = ChangeButtonStyle(button_Up, buttonData);
+        button_Up = DataHandler.ChangeButtonStyle(button_Up, buttonData);
 
         // DOWN
         Button button_Down = new Button(() =>
@@ -363,7 +323,7 @@ public class ToDo : EditorWindow
         });
         button_Down.name = "ButtonDown";
         button_Down.text = "▼";
-        button_Down = ChangeButtonStyle(button_Down, buttonData);
+        button_Down = DataHandler.ChangeButtonStyle(button_Down, buttonData);
 
         // LEFT
         Button button_Left = new Button(() =>
@@ -372,7 +332,7 @@ public class ToDo : EditorWindow
         });
         button_Left.name = "ButtonLeft";
         button_Left.text = "◀";
-        button_Left = ChangeButtonStyle(button_Left, buttonData);
+        button_Left = DataHandler.ChangeButtonStyle(button_Left, buttonData);
 
         // RIGHT
         Button button_Right = new Button(() =>
@@ -381,7 +341,7 @@ public class ToDo : EditorWindow
         });
         button_Right.name = "ButtonRight";
         button_Right.text = "▶";
-        button_Right = ChangeButtonStyle(button_Right, buttonData);
+        button_Right = DataHandler.ChangeButtonStyle(button_Right, buttonData);
 
         EditButtons.Add(button_Up);
         EditButtons.Add(button_Down);
