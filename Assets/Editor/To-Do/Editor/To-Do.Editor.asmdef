@@ -1,0 +1,7 @@
+{
+  "name": "ToDo.Editor",
+  "references": [
+    "ToDo.Runtime"
+  ],
+  "includePlatforms": ["Editor"]
+}
