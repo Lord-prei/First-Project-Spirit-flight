@@ -8,11 +8,14 @@ using UnityEngine.WSA;
 
 using Handling.UI;
 using Handling.Data;
+using GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer;
 
 public class ToDo : EditorWindow
 {
     public static bool editMode = true;
-    private ToDoFolderData rootData;
+
+    private static ToDoFolderData rootData;
+    private static VisualElement TaskList;
 
     [MenuItem("Window/ToDo")] // Add menu item to open the To-Do window
 
@@ -23,7 +26,7 @@ public class ToDo : EditorWindow
         wnd.titleContent = new GUIContent("To-Do"); // Set the title of the window
     }
 
-
+    
 
     private void PrintTree(ToDoFolderData root)
     {
@@ -65,58 +68,76 @@ public class ToDo : EditorWindow
 
         VisualElement ControlMenu = new VisualElement();
         ControlMenu.name = "ControlMenu";
-        ControlMenu.style.flexDirection = FlexDirection.Row;
+        ControlMenu.style.flexDirection = FlexDirection.Column;
         ControlMenu.style.width = Length.Percent(100);
 
-        VisualElement TaskList = new VisualElement();
+        VisualElement CM_Row1 = new VisualElement();
+        CM_Row1.name = "ControlMenu_Row1";
+        CM_Row1.style.flexDirection = FlexDirection.Row;
+        CM_Row1.style.width = Length.Percent(100);
+
+        VisualElement CM_Row2 = new VisualElement();
+        CM_Row2.name = "ControlMenu_Row2";
+        CM_Row2.style.flexDirection = FlexDirection.Row;
+        CM_Row2.style.width = Length.Percent(100);
+
+        TaskList = new VisualElement();
         TaskList.name = "TaskList";
         TaskList.style.flexDirection = FlexDirection.Column;
         TaskList.style.width = Length.Percent(100);
 
 
 
-        //Button button_AddTask = new Button(() =>
-        //{
-        //    ToDoItemData initVal = new ToDoItemData();
-        //    initVal.done = false;
-        //    initVal.name = $"New Task {rootVisualElement.childCount}";
-        //    initVal.description = $"New Description {rootVisualElement.childCount}";
-        //    initVal.desFolded = true;
-        //    initVal.parent = rootData;
+        Button button_AddTask = new Button(() =>
+        {
+            ToDoItemData initVal = new ToDoItemData();
+            initVal.done = false;
+            initVal.name = $"New Task {rootVisualElement.childCount}";
+            initVal.description = $"New Description {rootVisualElement.childCount}";
+            initVal.desFolded = true;
+            initVal.parent = rootData;
 
-        //    rootData.children.Add(initVal);
+            // attach to root data tree
+            rootData.children.Add(initVal);
 
-        //    TaskList.Add(CreateToDoItemElement(initVal));
-        //});
-        //button_AddTask.name = "AddTaskButton";
-        //button_AddTask.text = "Add Task";
-        //button_AddTask.style.width = Length.Percent(25);
+            // reload UI
+            UIHandler.ReloadUI(rootData, TaskList);
+        });
+        button_AddTask.name = "AddTaskButton";
+        button_AddTask.text = "Add Task";
+        button_AddTask.style.width = Length.Percent(50);
 
 
-        //Button button_AddFolder = new Button(() =>
-        //{
-        //    ToDoFolderData newFolder = new ToDoFolderData();
-        //    newFolder.name = $"New Folder {rootData.children.Count}";
-        //    newFolder.parent = rootData;
+        Button button_AddFolder = new Button(() =>
+        {
+            ToDoFolderData newFolder = new ToDoFolderData();
+            newFolder.name = $"New Folder {rootData.children.Count}";
+            newFolder.parent = rootData;
 
-        //    // attach to root data tree
-        //    rootData.children.Add(newFolder);
+            // attach to root data tree
+            rootData.children.Add(newFolder);
 
-        //    // create UI
-        //    VisualElement folderUI = CreateFolder(newFolder);
 
-        //    TaskList.Add(folderUI);
-        //    //Debug.Log("Add Folder");
-        //});
+            // reload UI
+            UIHandler.ReloadUI(rootData, TaskList);
+            //Debug.Log("Add Folder");
+        });
 
-        //button_AddFolder.name = "AddFolderButton";
-        //button_AddFolder.text = "Add Folder";
-        //button_AddFolder.style.width = Length.Percent(25);
+        button_AddFolder.name = "AddFolderButton";
+        button_AddFolder.text = "Add Folder";
+        button_AddFolder.style.width = Length.Percent(50);
+
+        Foldout foldout_Settings = new Foldout();
+        foldout_Settings.name = "Settings Foldout";
+        foldout_Settings.text = "Settings";
+        foldout_Settings.style.width = Length.Percent(100);
 
         Toggle toggle_EditMode = new Toggle();
         toggle_EditMode.name = "ToggleEditMode";
         toggle_EditMode.text = "Edit Mode";
-        toggle_EditMode.style.width = Length.Percent(25);
+        toggle_EditMode.value = false;
+        toggle_EditMode.style.width = Length.Percent(100);
+        editMode = false;
         toggle_EditMode.RegisterValueChangedCallback(evt =>
         {
             editMode = evt.newValue;
@@ -144,36 +165,50 @@ public class ToDo : EditorWindow
             PrintTree(rootData);
         });
         debugTree.text = "Print Folder Tree";
-        debugTree.style.width = Length.Percent(25);
+        debugTree.name = "DebugTreeButton";
+        debugTree.style.width = Length.Percent(100);
+
         Button reloadUI = new Button(() =>
         {
-            UIHandler.ReloadUI(rootData, root);
+            UIHandler.ReloadUI(rootData, TaskList);
         });
+        reloadUI.text = "Reload UI";
+        reloadUI.name = "ReloadUIButton";
+        reloadUI.style.width = Length.Percent(100);
 
 
-        rootData.children.Add(new ToDoItemData { name = "Task 3" });
+        //rootData.children.Add(new ToDoItemData { name = "Task 3" });
 
-        rootData.children.Add(new ToDoItemData { name = "Task 1" });
-        ToDoFolderData folder1 = new ToDoFolderData { name = "Folder 1" };
-        rootData.children.Add(folder1);
-        folder1.children.Add(new ToDoItemData { name = "Task 2" });
+        //rootData.children.Add(new ToDoItemData { name = "Task 1" });
+        //ToDoFolderData folder1 = new ToDoFolderData { name = "Folder 1" };
+        //rootData.children.Add(folder1);
+        //folder1.children.Add(new ToDoItemData { name = "Task 2" });
 
-        ToDoFolderData folder2 = new ToDoFolderData { name = "Folder 2" };
-        folder1.children.Add(folder2);
-        folder2.children.Add(new ToDoItemData { name = "Task 4" });
+        //ToDoFolderData folder2 = new ToDoFolderData { name = "Folder 2" };
+        //folder1.children.Add(folder2);
+        //folder2.children.Add(new ToDoItemData { name = "Task 4" });
 
-        rootData.children.Add(new ToDoItemData { name = "Task 5" });
+        //rootData.children.Add(new ToDoItemData { name = "Task 5" });
 
         root.Add(ControlMenu);
 
-        //ControlMenu.Add(button_AddTask);
-        //ControlMenu.Add(button_AddFolder);
-        ControlMenu.Add(toggle_EditMode);
-        ControlMenu.Add(debugTree);
+        ControlMenu.Add(CM_Row1);
+        CM_Row1.Add(button_AddTask);
+        CM_Row1.Add(button_AddFolder);
+
+        ControlMenu.Add(CM_Row2);
+        CM_Row2.Add(foldout_Settings);
+        foldout_Settings.Add(toggle_EditMode);
+        foldout_Settings.Add(debugTree);
+        foldout_Settings.Add(reloadUI);
 
 
         root.Add(TaskList);
         UIHandler.ReloadUI(rootData, TaskList);
+    }
 
+    public static void ToDoReloadUI()
+    {
+        UIHandler.ReloadUI(rootData, TaskList);
     }
 }

@@ -22,10 +22,6 @@ namespace Handling.UI
 
     class UIHandler
     {
-        public static int GetIndex(ToDoNode node)
-        {
-            return node.parent.children.IndexOf(node);
-        }
         // Method to create a horizontal foldout for the description of a to-do item
         public static VisualElement CreateHorizontalFoldout(ToDoItemData data, TextField parentTitle)
         {
@@ -169,7 +165,9 @@ namespace Handling.UI
             // Button for deleting the task
             Button deleteButton = new Button(() =>
             {
-                row.parent?.Remove(row);
+                data.parent?.children.Remove(data); // Remove the task from its parent's children list
+
+                ToDo.ToDoReloadUI();
             });
             deleteButton.name = "deleteButton";
             deleteButton.text = "X";
@@ -195,8 +193,9 @@ namespace Handling.UI
             // UP
             Button button_Up = new Button(() =>
             {
-                Debug.Log("Move Up");
+                DataMovement.MoveUP(data);
 
+                ToDo.ToDoReloadUI();
             });
             button_Up.name = "ButtonUp";
             button_Up.text = "▲";
@@ -205,7 +204,9 @@ namespace Handling.UI
             // DOWN
             Button button_Down = new Button(() =>
             {
-                Debug.Log("Move Down");
+                DataMovement.MoveDOWN(data);
+
+                ToDo.ToDoReloadUI();
             });
             button_Down.name = "ButtonDown";
             button_Down.text = "▼";
@@ -214,7 +215,9 @@ namespace Handling.UI
             // LEFT
             Button button_Left = new Button(() =>
             {
-                Debug.Log("Move Left");
+                DataMovement.MoveOutOffFolder(data);
+
+                ToDo.ToDoReloadUI();
             });
             button_Left.name = "ButtonLeft";
             button_Left.text = "◀";
@@ -223,7 +226,9 @@ namespace Handling.UI
             // RIGHT
             Button button_Right = new Button(() =>
             {
-                Debug.Log("Move Right");
+                DataMovement.MoveIntoFolder(data);
+
+                ToDo.ToDoReloadUI();
             });
             button_Right.name = "ButtonRight";
             button_Right.text = "▶";
@@ -273,8 +278,11 @@ namespace Handling.UI
             // Button for deleting the task
             Button deleteButton = new Button(() =>
             {
-                root.parent?.Remove(root);
+                data.parent?.children.Remove(data); // Remove the task from its parent's children list
+
+                ToDo.ToDoReloadUI();
             });
+
             deleteButton.name = "deleteButton";
             deleteButton.text = "X";
             //deleteButton.style.marginLeft = Length.Auto(); // Push the delete button to the right end of the row
@@ -304,7 +312,9 @@ namespace Handling.UI
             // UP
             Button button_Up = new Button(() =>
             {
-                Debug.Log("Move Up");
+                DataMovement.MoveUP(data);
+
+                ToDo.ToDoReloadUI();
             });
             button_Up.name = "ButtonUp";
             button_Up.text = "▲";
@@ -313,7 +323,9 @@ namespace Handling.UI
             // DOWN
             Button button_Down = new Button(() =>
             {
-                Debug.Log("Move Down");
+                DataMovement.MoveDOWN(data);
+
+                ToDo.ToDoReloadUI();
             });
             button_Down.name = "ButtonDown";
             button_Down.text = "▼";
@@ -322,7 +334,9 @@ namespace Handling.UI
             // LEFT
             Button button_Left = new Button(() =>
             {
-                Debug.Log("Move Left");
+                DataMovement.MoveOutOffFolder(data);
+
+                ToDo.ToDoReloadUI();
             });
             button_Left.name = "ButtonLeft";
             button_Left.text = "◀";
@@ -331,7 +345,9 @@ namespace Handling.UI
             // RIGHT
             Button button_Right = new Button(() =>
             {
-                Debug.Log("Move Right");
+                DataMovement.MoveIntoFolder(data);
+
+                ToDo.ToDoReloadUI();
             });
             button_Right.name = "ButtonRight";
             button_Right.text = "▶";
