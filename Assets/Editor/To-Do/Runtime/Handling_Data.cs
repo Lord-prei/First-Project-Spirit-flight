@@ -13,34 +13,13 @@ namespace Handling.Data
         public int height;
     }
 
-    //public abstract class ToDoNode
-    //{
-    //    public ToDoFolderData parent;
-    //}
-
-    //// Data structure for a to-do item
-    //public class ToDoItemData : ToDoNode
-    //{
-    //    public bool completed = false;
-    //    public string name = "TaskSUS";
-    //    public string description = "DIE";
-    //    public bool folded = true;
-    //}
-
-    //// Data structure for a to-do folder
-    //public class ToDoFolderData : ToDoNode
-    //{
-    //    public string name = "FolderSUS";
-
-    //    public List<ToDoNode> children = new();
-    //}
-
     public enum NodeType
     {
         Task,
         Folder
     }
 
+    [Serializable]
     public class ItemData
     {
         public string name;
@@ -54,6 +33,19 @@ namespace Handling.Data
 
         [NonSerialized]
         public ItemData parent;
+    }
+
+    public class DataPersistence
+    {
+        public static void RebuildParents(ItemData node, ItemData parent = null)
+        {
+            node.parent = parent;
+
+            foreach(var child in node.children)
+            {
+                RebuildParents(child, node);
+            }
+        }
     }
 
     public class DataMovement

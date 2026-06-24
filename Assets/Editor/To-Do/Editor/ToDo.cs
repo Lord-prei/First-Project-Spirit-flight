@@ -1,14 +1,16 @@
-﻿using JetBrains.Annotations;
+﻿using GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer;
+using Handling.Data;
+using Handling.UI;
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
-using UnityEditor;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.WSA;
+using Newtonsoft.Json;
+using UnityEditor;
 
-using Handling.UI;
-using Handling.Data;
-using GluonGui.WorkspaceWindow.Views.WorkspaceExplorer.Explorer;
 
 public class ToDo : EditorWindow
 {
@@ -178,6 +180,49 @@ public class ToDo : EditorWindow
         reloadUI.name = "ReloadUIButton";
         reloadUI.style.width = Length.Percent(100);
 
+        VisualElement DataHandling = new VisualElement();
+        DataHandling.name = "DataHandling Settings";
+        DataHandling.style.width = Length.Percent(100);
+        DataHandling.style.flexDirection = FlexDirection.Row;
+
+        Button Save = new Button(() =>
+        {
+            string folder = "Assets/TodoSaves";
+
+            if(!Directory.Exists(folder))
+                Directory.CreateDirectory(folder); // Creates folder if it doesnt exist
+
+            string path = Path.Combine(folder, "todo.json");
+
+            string json = JsonConvert.SerializeObject(rootData, Formatting.Indented); // Saving root as a json string
+
+            File.WriteAllText(path, json); // Saving File
+
+            AssetDatabase.Refresh(); // Refresh unity Database
+        });
+        Save.name = "Saving Button";
+        Save.text = "Save";
+        Save.style.width = Length.Percent(50);
+        Save.style.alignContent = Align.Center;
+
+        Button Load = new Button(() =>
+        {
+            string path = "Assets/TodoSaves/todo.json";
+
+            if (!File.Exists(path))
+                return;
+
+            string json = File.ReadAllText(path);
+
+            rootData = JsonConvert.DeserializeObject<ItemData>(json); // converting json to ItemData Object (WITHOUT PARENTS)
+
+            DataPersistence.RebuildParents(rootData);
+        });
+        Load.name = "Loading Button";
+        Load.text = "Load";
+        Load.style.width = Length.Percent(50);
+        Load.style.alignContent = Align.Center;
+
 
         //rootData.children.Add(new ToDoItemData { name = "Task 3" });
 
@@ -203,6 +248,10 @@ public class ToDo : EditorWindow
         foldout_Settings.Add(toggle_EditMode);
         foldout_Settings.Add(debugTree);
         foldout_Settings.Add(reloadUI);
+        foldout_Settings.Add(DataHandling);
+        DataHandling.Add(Save);
+        DataHandling.Add(Load);
+        DataHandling.Add(Load);
 
 
         root.Add(TaskList);
