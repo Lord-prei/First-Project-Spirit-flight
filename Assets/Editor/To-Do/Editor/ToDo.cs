@@ -2,14 +2,14 @@
 using Handling.Data;
 using Handling.UI;
 using JetBrains.Annotations;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using UnityEditor;
+using UnityEditor.Overlays;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityEngine.WSA;
-using Newtonsoft.Json;
-using UnityEditor;
 
 
 public class ToDo : EditorWindow
@@ -58,8 +58,6 @@ public class ToDo : EditorWindow
         }
     }
 
-    
-    
     public void CreateGUI()
     {
         VisualElement root = rootVisualElement;
@@ -187,18 +185,7 @@ public class ToDo : EditorWindow
 
         Button Save = new Button(() =>
         {
-            string folder = "Assets/TodoSaves";
-
-            if(!Directory.Exists(folder))
-                Directory.CreateDirectory(folder); // Creates folder if it doesnt exist
-
-            string path = Path.Combine(folder, "todo.json");
-
-            string json = JsonConvert.SerializeObject(rootData, Formatting.Indented); // Saving root as a json string
-
-            File.WriteAllText(path, json); // Saving File
-
-            AssetDatabase.Refresh(); // Refresh unity Database
+            DataPersistence.SaveData(rootData);
         });
         Save.name = "Saving Button";
         Save.text = "Save";
@@ -207,16 +194,8 @@ public class ToDo : EditorWindow
 
         Button Load = new Button(() =>
         {
-            string path = "Assets/TodoSaves/todo.json";
-
-            if (!File.Exists(path))
-                return;
-
-            string json = File.ReadAllText(path);
-
-            rootData = JsonConvert.DeserializeObject<ItemData>(json); // converting json to ItemData Object (WITHOUT PARENTS)
-
-            DataPersistence.RebuildParents(rootData);
+            rootData = DataPersistence.LoadData();
+            UIHandler.ReloadUI(rootData, TaskList);
         });
         Load.name = "Loading Button";
         Load.text = "Load";

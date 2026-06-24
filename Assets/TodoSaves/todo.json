@@ -23,12 +23,20 @@
         {
           "name": "New Task 2",
           "description": "New Description 2",
-          "completed": true,
+          "completed": false,
           "folded": true,
           "type": 0,
           "children": []
         }
       ]
+    },
+    {
+      "name": "New Task 2",
+      "description": "New Description 2",
+      "completed": true,
+      "folded": true,
+      "type": 0,
+      "children": []
     }
   ]
 }

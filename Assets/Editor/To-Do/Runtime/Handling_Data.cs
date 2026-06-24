@@ -1,7 +1,10 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
 using UnityEngine;
+using Newtonsoft.Json;
 
 
 namespace Handling.Data
@@ -45,6 +48,37 @@ namespace Handling.Data
             {
                 RebuildParents(child, node);
             }
+        }
+
+        public static void SaveData(ItemData root)
+        {
+            string folder = "Assets/TodoSaves";
+
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder); // Creates folder if it doesnt exist
+
+            string path = Path.Combine(folder, "todo.json");
+
+            string json = JsonConvert.SerializeObject(root, Formatting.Indented); // Saving root as a json string
+
+            File.WriteAllText(path, json); // Saving File
+
+            AssetDatabase.Refresh(); // Refresh unity Database
+        }
+
+        public static ItemData LoadData()
+        {
+            string path = "Assets/TodoSaves/todo.json";
+
+            if (!File.Exists(path))
+                return null;
+
+            string json = File.ReadAllText(path);
+
+            ItemData root = JsonConvert.DeserializeObject<ItemData>(json); // converting json to ItemData Object (WITHOUT PARENTS)
+
+            DataPersistence.RebuildParents(root);
+            return root;
         }
     }
 
