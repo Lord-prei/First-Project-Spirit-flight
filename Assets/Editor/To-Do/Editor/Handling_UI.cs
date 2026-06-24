@@ -23,7 +23,7 @@ namespace Handling.UI
     class UIHandler
     {
         // Method to create a horizontal foldout for the description of a to-do item
-        public static VisualElement CreateHorizontalFoldout(ToDoItemData data, TextField parentTitle)
+        public static VisualElement CreateHorizontalFoldout(ItemData data, TextField parentTitle)
         {
 
             // Data for styling the foldout button
@@ -99,10 +99,10 @@ namespace Handling.UI
             void ToggleFoldout(bool init)
             {
                 if (!init) // Only toggle foldout state on button click, not during initialization
-                    data.desFolded = !data.desFolded;
+                    data.folded = !data.folded;
 
                 //change Symbol on button
-                if (data.desFolded) //Folded
+                if (data.folded) //Folded
                 {
                     root.style.flexGrow = 0;        // Don't take up space when folded
                     foldoutButton.text = "▶";       // Folded symbol
@@ -121,7 +121,7 @@ namespace Handling.UI
         }
 
         // Method to create a VisualElement for a to-do item based on the provided data
-        public static VisualElement CreateToDoItemElement(ToDoItemData data)
+        public static VisualElement CreateToDoItemElement(ItemData data)
         {
             // Data for styling the buttons
             ButtonStyleData buttonData = new ButtonStyleData();
@@ -140,12 +140,12 @@ namespace Handling.UI
 
             // Create an Event Listener to save input in data when the user interacts with the UI
             // Toggle for marking the task as done
-            Toggle done = new Toggle();
-            done.name = "CheckBox";
-            done.value = data.done;
-            done.RegisterValueChangedCallback(evt =>
+            Toggle completed = new Toggle();
+            completed.name = "CheckBox";
+            completed.value = data.completed;
+            completed.RegisterValueChangedCallback(evt =>
             {
-                data.done = evt.newValue;
+                data.completed = evt.newValue;
                 //Debug.Log(data);
             });
 
@@ -246,7 +246,7 @@ namespace Handling.UI
 
 
             // Add the UI elements to the row
-            row.Add(done);
+            row.Add(completed);
             row.Add(title);
             row.Add(foldOut);
             row.Add(EditButtons);
@@ -258,7 +258,7 @@ namespace Handling.UI
         }
 
         // Method to create a VisualElement for a to-do folder based on the provided data
-        public static VisualElement CreateFolder(ToDoFolderData data, out VisualElement childrenContainer)
+        public static VisualElement CreateFolder(ItemData data, out VisualElement childrenContainer)
         {
             ButtonStyleData buttonData = new ButtonStyleData();
             buttonData.width = 20;
@@ -368,25 +368,25 @@ namespace Handling.UI
             return root;
         }
 
-        public static void ReloadUI(ToDoFolderData dataRoot, VisualElement visualRoot)
+        public static void ReloadUI(ItemData dataRoot, VisualElement visualRoot)
         {
             visualRoot.Clear();
 
             foreach (var child in dataRoot.children)
             {
-                if (child is ToDoItemData item)
+                if (child.type == NodeType.Task)
                 {
-                    VisualElement ToDoItem = CreateToDoItemElement(item);
+                    VisualElement ToDoItem = CreateToDoItemElement(child);
 
                     visualRoot.Add(ToDoItem);
                 }
-                else if (child is ToDoFolderData folder)
+                else if (child.type == NodeType.Folder)
                 {
-                    VisualElement folderUI = CreateFolder(folder, out var container);
+                    VisualElement folderUI = CreateFolder(child, out var container);
 
                     visualRoot.Add(folderUI);
 
-                    ReloadUI(folder, container);
+                    ReloadUI(child, container);
                 }
             }
         }

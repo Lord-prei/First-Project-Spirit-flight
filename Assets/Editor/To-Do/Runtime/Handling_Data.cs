@@ -13,37 +13,52 @@ namespace Handling.Data
         public int height;
     }
 
-    public abstract class ToDoNode
+    //public abstract class ToDoNode
+    //{
+    //    public ToDoFolderData parent;
+    //}
+
+    //// Data structure for a to-do item
+    //public class ToDoItemData : ToDoNode
+    //{
+    //    public bool completed = false;
+    //    public string name = "TaskSUS";
+    //    public string description = "DIE";
+    //    public bool folded = true;
+    //}
+
+    //// Data structure for a to-do folder
+    //public class ToDoFolderData : ToDoNode
+    //{
+    //    public string name = "FolderSUS";
+
+    //    public List<ToDoNode> children = new();
+    //}
+
+    public enum NodeType
     {
-        public ToDoFolderData parent;
+        Task,
+        Folder
     }
 
-    // Data structure for a to-do item
-    public class ToDoItemData : ToDoNode
+    public class ItemData
     {
-        public bool done = false;
-        public string name = "TaskSUS";
-        public string description = "DIE";
-        public bool desFolded = true;
+        public string name;
+        public string description;
+        public bool completed;
+        public bool folded;
 
-        // Override ToString for easy debugging
-        public override string ToString()
-        {
-            return $"TodoItemData\ndone =\t{done}\ntitle =\t\t{name}\ndescr =\t{description}\ndesFolded =\t{desFolded}\nparent =\t{parent}";
-        }
-    }
+        public NodeType type;
 
-    // Data structure for a to-do folder
-    public class ToDoFolderData : ToDoNode
-    {
-        public string name = "FolderSUS";
+        public List<ItemData> children = new();
 
-        public List<ToDoNode> children = new();
+        [NonSerialized]
+        public ItemData parent;
     }
 
     public class DataMovement
     {
-        public static void MoveUP(ToDoNode node)
+        public static void MoveUP(ItemData node)
         {
             // Get the parent of the node and check if it exists
             var parent = node.parent;
@@ -64,7 +79,7 @@ namespace Handling.Data
             (siblings[index - 1], siblings[index]) = (siblings[index], siblings[index - 1]);
         }
 
-        public static void MoveDOWN(ToDoNode node)
+        public static void MoveDOWN(ItemData node)
         {
             // Get the parent of the node and check if it exists
             var parent = node.parent;
@@ -85,7 +100,7 @@ namespace Handling.Data
             (siblings[index + 1], siblings[index]) = (siblings[index], siblings[index + 1]);
         }
 
-        public static void MoveIntoFolder(ToDoNode node)
+        public static void MoveIntoFolder(ItemData node)
         {
             // Get the parent of the node and check if it exists
             var parent = (node.parent);
@@ -100,8 +115,11 @@ namespace Handling.Data
             if (index <= 0)
                 return;
 
+            // Item above
+            ItemData targetFolder = siblings[index - 1];
+
             // Check if item above is a Folder
-            if (siblings[index - 1] is not ToDoFolderData targetFolder)
+            if (targetFolder.type != NodeType.Folder)
                 return;
 
             // Remove from current parent
@@ -114,7 +132,7 @@ namespace Handling.Data
             node.parent = targetFolder;
         }
 
-        public static void MoveOutOffFolder(ToDoNode node)
+        public static void MoveOutOffFolder(ItemData node)
         {
             // Get the currentFolder (parent) of the node and check if it exists
             var currentFolder = (node.parent);

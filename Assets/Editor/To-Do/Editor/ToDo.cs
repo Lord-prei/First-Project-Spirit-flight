@@ -14,7 +14,7 @@ public class ToDo : EditorWindow
 {
     public static bool editMode = true;
 
-    private static ToDoFolderData rootData;
+    private static ItemData rootData;
     private static VisualElement TaskList;
 
     [MenuItem("Window/ToDo")] // Add menu item to open the To-Do window
@@ -28,7 +28,7 @@ public class ToDo : EditorWindow
 
     
 
-    private void PrintTree(ToDoFolderData root)
+    private void PrintTree(ItemData root)
     {
         var sb = new System.Text.StringBuilder();
 
@@ -37,7 +37,7 @@ public class ToDo : EditorWindow
         Debug.Log(sb.ToString());
     }
 
-    private void BuildTree(ToDoFolderData folder, int depth, System.Text.StringBuilder sb)
+    private void BuildTree(ItemData folder, int depth, System.Text.StringBuilder sb)
     {
         string indent = new string(' ', depth * 2);
 
@@ -45,13 +45,13 @@ public class ToDo : EditorWindow
 
         foreach(var child in folder.children)
         {
-            if (child is ToDoItemData)
+            if (child.type == NodeType.Task)
             {
-                sb.AppendLine($"{indent}  [Task] {((ToDoItemData)child).name}");
+                sb.AppendLine($"{indent}  [Task] {((ItemData)child).name}");
             }
-            if (child is ToDoFolderData)
+            if (child.type == NodeType.Folder)
             {
-                BuildTree((ToDoFolderData)child, depth + 1, sb);
+                BuildTree((ItemData)child, depth + 1, sb);
             }
         }
     }
@@ -63,7 +63,7 @@ public class ToDo : EditorWindow
         VisualElement root = rootVisualElement;
         root.name = "Root";
 
-        rootData = new ToDoFolderData();
+        rootData = new ItemData();
         rootData.name = "Root";
 
         VisualElement ControlMenu = new VisualElement();
@@ -90,12 +90,13 @@ public class ToDo : EditorWindow
 
         Button button_AddTask = new Button(() =>
         {
-            ToDoItemData initVal = new ToDoItemData();
-            initVal.done = false;
+            ItemData initVal = new ItemData();
+            initVal.completed = false;
             initVal.name = $"New Task {rootVisualElement.childCount}";
             initVal.description = $"New Description {rootVisualElement.childCount}";
-            initVal.desFolded = true;
+            initVal.folded = true;
             initVal.parent = rootData;
+            initVal.type = NodeType.Task;
 
             // attach to root data tree
             rootData.children.Add(initVal);
@@ -110,9 +111,10 @@ public class ToDo : EditorWindow
 
         Button button_AddFolder = new Button(() =>
         {
-            ToDoFolderData newFolder = new ToDoFolderData();
+            ItemData newFolder = new ItemData();
             newFolder.name = $"New Folder {rootData.children.Count}";
             newFolder.parent = rootData;
+            newFolder.type = NodeType.Folder;
 
             // attach to root data tree
             rootData.children.Add(newFolder);
