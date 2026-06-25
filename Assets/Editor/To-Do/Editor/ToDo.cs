@@ -16,7 +16,7 @@ public class ToDo : EditorWindow
 {
     public static bool editMode = true;
 
-    private static ItemData rootData;
+    private static ItemData tasklistData;
     private static VisualElement TaskList;
 
     [MenuItem("Window/ToDo")] // Add menu item to open the To-Do window
@@ -27,9 +27,7 @@ public class ToDo : EditorWindow
         ToDo wnd = GetWindow<ToDo>();               // Get an instance of the To-Do window
         wnd.titleContent = new GUIContent("To-Do"); // Set the title of the window
     }
-
     
-
     private void PrintTree(ItemData root)
     {
         var sb = new System.Text.StringBuilder();
@@ -63,30 +61,23 @@ public class ToDo : EditorWindow
         VisualElement root = rootVisualElement;
         root.name = "Root";
 
-        rootData = new ItemData();
-        rootData.name = "Root";
+        tasklistData = new ItemData();
+        tasklistData.name = "Root";
 
+        #region Navigation UI
+
+        // -------------------------------------------------- Control menu
         VisualElement ControlMenu = new VisualElement();
         ControlMenu.name = "ControlMenu";
         ControlMenu.style.flexDirection = FlexDirection.Column;
         ControlMenu.style.width = Length.Percent(100);
 
+
+        // -------------------------------------------------- Row 1
         VisualElement CM_Row1 = new VisualElement();
         CM_Row1.name = "ControlMenu_Row1";
         CM_Row1.style.flexDirection = FlexDirection.Row;
         CM_Row1.style.width = Length.Percent(100);
-
-        VisualElement CM_Row2 = new VisualElement();
-        CM_Row2.name = "ControlMenu_Row2";
-        CM_Row2.style.flexDirection = FlexDirection.Row;
-        CM_Row2.style.width = Length.Percent(100);
-
-        TaskList = new VisualElement();
-        TaskList.name = "TaskList";
-        TaskList.style.flexDirection = FlexDirection.Column;
-        TaskList.style.width = Length.Percent(100);
-
-
 
         Button button_AddTask = new Button(() =>
         {
@@ -95,50 +86,54 @@ public class ToDo : EditorWindow
             initVal.name = $"New Task {rootVisualElement.childCount}";
             initVal.description = $"New Description {rootVisualElement.childCount}";
             initVal.folded = true;
-            initVal.parent = rootData;
+            initVal.parent = tasklistData;
             initVal.type = NodeType.Task;
 
             // attach to root data tree
-            rootData.children.Add(initVal);
+            tasklistData.children.Add(initVal);
 
             // reload UI
-            UIHandler.ReloadUI(rootData, TaskList);
+            UIHandler.ReloadUI(tasklistData, TaskList);
         });
         button_AddTask.name = "AddTaskButton";
         button_AddTask.text = "Add Task";
-        button_AddTask.style.width = Length.Percent(50);
-
+        button_AddTask.style.flexGrow = 1;
 
         Button button_AddFolder = new Button(() =>
         {
             ItemData newFolder = new ItemData();
-            newFolder.name = $"New Folder {rootData.children.Count}";
-            newFolder.parent = rootData;
+            newFolder.name = $"New Folder {tasklistData.children.Count}";
+            newFolder.parent = tasklistData;
+            newFolder.folded = true;
             newFolder.type = NodeType.Folder;
 
             // attach to root data tree
-            rootData.children.Add(newFolder);
+            tasklistData.children.Add(newFolder);
 
 
             // reload UI
-            UIHandler.ReloadUI(rootData, TaskList);
+            UIHandler.ReloadUI(tasklistData, TaskList);
             //Debug.Log("Add Folder");
         });
-
         button_AddFolder.name = "AddFolderButton";
         button_AddFolder.text = "Add Folder";
-        button_AddFolder.style.width = Length.Percent(50);
+        button_AddFolder.style.flexGrow = 1;
+
+        // -------------------------------------------------- Row 2
+        VisualElement CM_Row2 = new VisualElement();
+        CM_Row2.name = "ControlMenu_Row2";
+        CM_Row2.style.flexDirection = FlexDirection.Row;
+        CM_Row2.style.width = Length.Percent(100);
+
+
 
         Foldout foldout_Settings = new Foldout();
         foldout_Settings.name = "Settings Foldout";
         foldout_Settings.text = "Settings";
         foldout_Settings.style.width = Length.Percent(100);
 
+
         Toggle toggle_EditMode = new Toggle();
-        toggle_EditMode.name = "ToggleEditMode";
-        toggle_EditMode.text = "Edit Mode";
-        toggle_EditMode.value = false;
-        toggle_EditMode.style.width = Length.Percent(100);
         editMode = false;
         toggle_EditMode.RegisterValueChangedCallback(evt =>
         {
@@ -160,23 +155,27 @@ public class ToDo : EditorWindow
                     editMode ? Color.darkGray : StyleKeyword.Null;
             }
         });
-
+        toggle_EditMode.name = "ToggleEditMode";
+        toggle_EditMode.text = "Edit Mode";
+        toggle_EditMode.value = false;
+        toggle_EditMode.style.flexGrow = 1;  
 
         Button debugTree = new Button(() =>
         {
-            PrintTree(rootData);
+            PrintTree(tasklistData);
         });
         debugTree.text = "Print Folder Tree";
         debugTree.name = "DebugTreeButton";
-        debugTree.style.width = Length.Percent(100);
+        debugTree.style.flexGrow = 1;
 
         Button reloadUI = new Button(() =>
         {
-            UIHandler.ReloadUI(rootData, TaskList);
+            UIHandler.ReloadUI(tasklistData, TaskList);
         });
         reloadUI.text = "Reload UI";
         reloadUI.name = "ReloadUIButton";
-        reloadUI.style.width = Length.Percent(100);
+        reloadUI.style.flexGrow = 1;
+
 
         VisualElement DataHandling = new VisualElement();
         DataHandling.name = "DataHandling Settings";
@@ -185,60 +184,64 @@ public class ToDo : EditorWindow
 
         Button Save = new Button(() =>
         {
-            DataPersistence.SaveData(rootData);
+            DataPersistence.SaveData(tasklistData);
         });
         Save.name = "Saving Button";
         Save.text = "Save";
-        Save.style.width = Length.Percent(50);
+        Save.style.flexGrow = 1;
         Save.style.alignContent = Align.Center;
 
         Button Load = new Button(() =>
         {
-            rootData = DataPersistence.LoadData();
-            UIHandler.ReloadUI(rootData, TaskList);
+            tasklistData = DataPersistence.LoadData();
+            UIHandler.ReloadUI(tasklistData, TaskList);
         });
         Load.name = "Loading Button";
         Load.text = "Load";
-        Load.style.width = Length.Percent(50);
+        Load.style.flexGrow = 1;
         Load.style.alignContent = Align.Center;
 
 
-        //rootData.children.Add(new ToDoItemData { name = "Task 3" });
+        TaskList = new VisualElement();
+        TaskList.name = "TaskList";
+        TaskList.style.flexDirection = FlexDirection.Column;
+        TaskList.style.width = Length.Percent(100);
 
-        //rootData.children.Add(new ToDoItemData { name = "Task 1" });
-        //ToDoFolderData folder1 = new ToDoFolderData { name = "Folder 1" };
-        //rootData.children.Add(folder1);
-        //folder1.children.Add(new ToDoItemData { name = "Task 2" });
-
-        //ToDoFolderData folder2 = new ToDoFolderData { name = "Folder 2" };
-        //folder1.children.Add(folder2);
-        //folder2.children.Add(new ToDoItemData { name = "Task 4" });
-
-        //rootData.children.Add(new ToDoItemData { name = "Task 5" });
+        #endregion Navigation UI
 
         root.Add(ControlMenu);
 
         ControlMenu.Add(CM_Row1);
+
         CM_Row1.Add(button_AddTask);
         CM_Row1.Add(button_AddFolder);
 
         ControlMenu.Add(CM_Row2);
+
         CM_Row2.Add(foldout_Settings);
+
         foldout_Settings.Add(toggle_EditMode);
         foldout_Settings.Add(debugTree);
         foldout_Settings.Add(reloadUI);
         foldout_Settings.Add(DataHandling);
+
         DataHandling.Add(Save);
         DataHandling.Add(Load);
-        DataHandling.Add(Load);
 
 
-        root.Add(TaskList);
-        UIHandler.ReloadUI(rootData, TaskList);
+        ScrollView scroll = new ScrollView();
+        scroll.style.alignSelf = Align.FlexStart;
+        scroll.style.flexGrow = 1;
+        scroll.style.width = Length.Percent(100);
+        scroll.verticalScrollerVisibility = ScrollerVisibility.AlwaysVisible;
+
+        scroll.Add(TaskList);
+        root.Add(scroll);
+        UIHandler.ReloadUI(tasklistData, TaskList);
     }
 
     public static void ToDoReloadUI()
     {
-        UIHandler.ReloadUI(rootData, TaskList);
+        UIHandler.ReloadUI(tasklistData, TaskList);
     }
 }

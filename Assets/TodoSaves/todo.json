@@ -6,37 +6,39 @@
   "type": 0,
   "children": [
     {
-      "name": "New Task 2",
-      "description": "New Description 2",
-      "completed": false,
-      "folded": true,
-      "type": 0,
-      "children": []
-    },
-    {
       "name": "New Folder 0",
       "description": null,
       "completed": false,
-      "folded": false,
+      "folded": true,
       "type": 1,
       "children": [
         {
-          "name": "New Task 2",
-          "description": "New Description 2",
+          "name": "New Folder 1",
+          "description": null,
           "completed": false,
           "folded": true,
-          "type": 0,
-          "children": []
+          "type": 1,
+          "children": [
+            {
+              "name": "New Folder 2",
+              "description": null,
+              "completed": false,
+              "folded": false,
+              "type": 1,
+              "children": [
+                {
+                  "name": "New Task 2",
+                  "description": "New Description 2",
+                  "completed": true,
+                  "folded": true,
+                  "type": 0,
+                  "children": []
+                }
+              ]
+            }
+          ]
         }
       ]
-    },
-    {
-      "name": "New Task 2",
-      "description": "New Description 2",
-      "completed": true,
-      "folded": true,
-      "type": 0,
-      "children": []
     }
   ]
 }

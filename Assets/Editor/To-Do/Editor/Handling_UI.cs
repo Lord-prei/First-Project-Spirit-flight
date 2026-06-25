@@ -270,6 +270,11 @@ namespace Handling.UI
             root.style.width = Length.Auto();
 
             Foldout foldout = new Foldout();
+            foldout.value = !data.folded;
+            foldout.RegisterValueChangedCallback(evt =>
+            {
+                data.folded = !evt.newValue;
+            });
             foldout.name = "FolderFoldout";
             foldout.text = data.name;
             foldout.style.flexGrow = 1;
