@@ -99,10 +99,10 @@ namespace Handling.UI
             void ToggleFoldout(bool init)
             {
                 if (!init) // Only toggle foldout state on button click, not during initialization
-                    data.folded = !data.folded;
+                    data.unfolded = !data.unfolded;
 
                 //change Symbol on button
-                if (data.folded) //Folded
+                if (!data.unfolded) //Folded
                 {
                     root.style.flexGrow = 0;        // Don't take up space when folded
                     foldoutButton.text = "▶";       // Folded symbol
@@ -270,12 +270,18 @@ namespace Handling.UI
             root.style.width = Length.Auto();
 
             Foldout foldout = new Foldout();
-            foldout.value = !data.folded;
+            foldout.value = data.unfolded;
             foldout.RegisterValueChangedCallback(evt =>
             {
-                data.folded = !evt.newValue;
+                // Ensure that the callback is only triggered by the foldout itself, not its children
+                if (!ReferenceEquals(evt.target, evt.currentTarget))
+                    return;
+
+                data.unfolded = evt.newValue;
+                //Debug.Log($"Folder '{data.name}' unfolded state changed to: {data.unfolded}");
+                
             });
-            foldout.name = "FolderFoldout";
+            foldout.name = $"FolderFoldout {UnityEngine.Random.Range(1, 10)}";
             foldout.text = data.name;
             foldout.style.flexGrow = 1;
             foldout.style.width = Length.Percent(100);

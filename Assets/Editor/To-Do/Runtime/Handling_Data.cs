@@ -28,7 +28,7 @@ namespace Handling.Data
         public string name;
         public string description;
         public bool completed;
-        public bool folded;
+        public bool unfolded;
 
         public NodeType type;
 
@@ -55,7 +55,7 @@ namespace Handling.Data
             string folder = "Assets/TodoSaves";
 
             if (!Directory.Exists(folder))
-                Directory.CreateDirectory(folder); // Creates folder if it doesnt exist
+                Directory.CreateDirectory(folder); // Creates folder if it doesn't exist
 
             string path = Path.Combine(folder, "todo.json");
 

@@ -85,7 +85,7 @@ public class ToDo : EditorWindow
             initVal.completed = false;
             initVal.name = $"New Task {rootVisualElement.childCount}";
             initVal.description = $"New Description {rootVisualElement.childCount}";
-            initVal.folded = true;
+            initVal.unfolded = false;
             initVal.parent = tasklistData;
             initVal.type = NodeType.Task;
 
@@ -104,7 +104,7 @@ public class ToDo : EditorWindow
             ItemData newFolder = new ItemData();
             newFolder.name = $"New Folder {tasklistData.children.Count}";
             newFolder.parent = tasklistData;
-            newFolder.folded = true;
+            newFolder.unfolded = false;
             newFolder.type = NodeType.Folder;
 
             // attach to root data tree
