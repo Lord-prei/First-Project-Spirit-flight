@@ -2,6 +2,7 @@
 using System;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.Animations;
 using UnityEngine.UIElements;
 using UnityEngine.WSA;
 
@@ -22,6 +23,132 @@ namespace Handling.UI
 
     class UIHandler
     {
+        private static VisualElement contextMenu;
+        public static void ShowPopup(Vector2 mousePos)
+        {
+            contextMenu?.RemoveFromHierarchy(); // Remove any existing context menu
+            contextMenu = new VisualElement();
+            contextMenu.style.position = Position.Absolute;
+            contextMenu.focusable = true;
+            contextMenu.style.backgroundColor = Color.lightGray;
+
+
+            // Position the menu at the mouse position
+            contextMenu.style.left = Length.Pixels(mousePos.x);
+            contextMenu.style.top = Length.Pixels(mousePos.y - 20);
+
+            contextMenu.style.width = Length.Pixels(100);
+            contextMenu.style.height = Length.Pixels(100);
+
+            Button Copy = new Button();
+            Copy.text = "Copy Text";
+            Copy.style.flexGrow = 1;
+
+            Button Paste = new Button();
+            Paste.text = "Paste Text";
+            Paste.style.flexGrow = 1;
+
+            Button delete = new Button();
+            delete.text = "Delete Item";
+            delete.style.flexGrow = 1;
+
+
+
+            contextMenu.Add(Copy);
+            contextMenu.Add(Paste);
+            contextMenu.Add(delete);
+            ToDo.root.Add(contextMenu);
+
+            // Register a temporary outside-click listener
+            ToDo.root.RegisterCallback<PointerDownEvent>(
+                CloseContextMenu,
+                TrickleDown.TrickleDown);
+        }
+
+        public static void CloseContextMenu(PointerDownEvent evt)
+        {
+            if (contextMenu == null)
+                return;
+
+            // Ignore clicks inside the menu
+            if (contextMenu.worldBound.Contains(evt.position))
+                return;
+
+            contextMenu.RemoveFromHierarchy();
+            contextMenu = null;
+
+            ToDo.root.UnregisterCallback<PointerDownEvent>(
+                CloseContextMenu,
+                TrickleDown.TrickleDown);
+        }
+
+        // Method to create the edit mode button
+        public static VisualElement CreateEditModeButton(ItemData data)
+        {
+            ButtonStyleData buttonData = new ButtonStyleData();
+            buttonData.width = 20;
+            buttonData.height = 20;
+
+            VisualElement EditButtons = new VisualElement();
+            EditButtons.name = "EditButtons";
+            EditButtons.style.flexDirection = FlexDirection.Row;
+            //EditButtons.style.marginLeft = Length.Auto(); // Push the edit buttons to the right end of the row
+            EditButtons.style.position = Position.Absolute; // Position the edit buttons absolutely within the row
+            EditButtons.style.right = 0; // Align the edit buttons to the right edge of the row
+
+          
+            // UP
+            Button button_Up = new Button(() =>
+            {
+                DataMovement.MoveUP(data);
+
+                ToDo.ToDoReloadUI();
+            });
+            button_Up.name = "ButtonUp";
+            button_Up.text = "▲";
+            button_Up = DataHandler.ChangeButtonStyle(button_Up, buttonData);
+
+            // DOWN
+            Button button_Down = new Button(() =>
+            {
+                DataMovement.MoveDOWN(data);
+
+                ToDo.ToDoReloadUI();
+            });
+            button_Down.name = "ButtonDown";
+            button_Down.text = "▼";
+            button_Down = DataHandler.ChangeButtonStyle(button_Down, buttonData);
+
+            // LEFT
+            Button button_Left = new Button(() =>
+            {
+                DataMovement.MoveOutOffFolder(data);
+
+                ToDo.ToDoReloadUI();
+            });
+            button_Left.name = "ButtonLeft";
+            button_Left.text = "◀";
+            button_Left = DataHandler.ChangeButtonStyle(button_Left, buttonData);
+
+            // RIGHT
+            Button button_Right = new Button(() =>
+            {
+                DataMovement.MoveIntoFolder(data);
+                data.parent.unfolded = true;
+
+                ToDo.ToDoReloadUI();
+            });
+            button_Right.name = "ButtonRight";
+            button_Right.text = "▶";
+            button_Right = DataHandler.ChangeButtonStyle(button_Right, buttonData);
+
+            EditButtons.Add(button_Up);
+            EditButtons.Add(button_Down);
+            EditButtons.Add(button_Left);
+            EditButtons.Add(button_Right);
+
+            return EditButtons;
+        }
         // Method to create a horizontal foldout for the description of a to-do item
         public static VisualElement CreateHorizontalFoldout(ItemData data, TextField parentTitle)
         {
@@ -132,6 +259,19 @@ namespace Handling.UI
             VisualElement row = new VisualElement();
             row.name = "TaskRoot";
 
+            // Add a right-click context menu event listener to the Task
+            row.RegisterCallback<PointerDownEvent>(evt =>
+            {
+                if (evt.button != 1)
+                    return;
+                
+                ShowPopup(evt.position);
+
+                Debug.Log($"Right-click on '{data.name}'");
+
+                evt.StopPropagation();
+            }, TrickleDown.TrickleDown);
+
             // Set the layout of the row to be horizontal and take up the full width of the parent
             row.style.flexDirection = FlexDirection.Row;
             row.style.width = Length.Percent(100);
@@ -161,6 +301,19 @@ namespace Handling.UI
                 //Debug.Log(data);
             });
 
+            // Stop Native Right Click Menu from appearing on the title field
+            title.RegisterCallback<PointerDownEvent>(evt =>
+            {
+                if (evt.button == 1)
+                    evt.StopImmediatePropagation();
+            }, TrickleDown.TrickleDown);
+
+            title.RegisterCallback<PointerUpEvent>(evt =>
+            {
+                if (evt.button == 1)
+                    evt.StopImmediatePropagation();
+            }, TrickleDown.TrickleDown);
+
 
             // Button for deleting the task
             Button deleteButton = new Button(() =>
@@ -177,67 +330,15 @@ namespace Handling.UI
 
 
             // EDIT BUTTONS
-
             VisualElement EditButtons = new VisualElement();
-            EditButtons.name = "EditButtons";
-            EditButtons.style.flexDirection = FlexDirection.Row;
-            EditButtons.style.marginLeft = Length.Auto(); // Push the edit buttons to the right end of the row
+
+            EditButtons = CreateEditModeButton(data);
 
             // Set the visibility of the edit buttons based on the edit mode
             EditButtons.style.display =
                 ToDo.editMode ? DisplayStyle.Flex : DisplayStyle.None;
             deleteButton.style.display =
                 ToDo.editMode ? DisplayStyle.None : DisplayStyle.Flex;
-
-
-            // UP
-            Button button_Up = new Button(() =>
-            {
-                DataMovement.MoveUP(data);
-
-                ToDo.ToDoReloadUI();
-            });
-            button_Up.name = "ButtonUp";
-            button_Up.text = "▲";
-            button_Up = DataHandler.ChangeButtonStyle(button_Up, buttonData);
-
-            // DOWN
-            Button button_Down = new Button(() =>
-            {
-                DataMovement.MoveDOWN(data);
-
-                ToDo.ToDoReloadUI();
-            });
-            button_Down.name = "ButtonDown";
-            button_Down.text = "▼";
-            button_Down = DataHandler.ChangeButtonStyle(button_Down, buttonData);
-
-            // LEFT
-            Button button_Left = new Button(() =>
-            {
-                DataMovement.MoveOutOffFolder(data);
-
-                ToDo.ToDoReloadUI();
-            });
-            button_Left.name = "ButtonLeft";
-            button_Left.text = "◀";
-            button_Left = DataHandler.ChangeButtonStyle(button_Left, buttonData);
-
-            // RIGHT
-            Button button_Right = new Button(() =>
-            {
-                DataMovement.MoveIntoFolder(data);
-
-                ToDo.ToDoReloadUI();
-            });
-            button_Right.name = "ButtonRight";
-            button_Right.text = "▶";
-            button_Right = DataHandler.ChangeButtonStyle(button_Right, buttonData);
-
-            EditButtons.Add(button_Up);
-            EditButtons.Add(button_Down);
-            EditButtons.Add(button_Left);
-            EditButtons.Add(button_Right);
 
 
 
@@ -286,6 +387,20 @@ namespace Handling.UI
             foldout.style.flexGrow = 1;
             foldout.style.width = Length.Percent(100);
 
+            // Add a right-click context menu event listener to the Task
+            foldout.Q<Toggle>().RegisterCallback<PointerDownEvent>(evt =>
+            {
+                if (evt.button != 1)
+                    return;
+
+                ShowPopup(evt.position);
+
+                Debug.Log($"Right-click on '{data.name}'");
+
+                evt.StopPropagation();
+            }, TrickleDown.TrickleDown);
+
+
             // Button for deleting the task
             Button deleteButton = new Button(() =>
             {
@@ -305,70 +420,15 @@ namespace Handling.UI
             childrenContainer.name = "ChildrenContainer";
 
             // EDIT BUTTONS
-
             VisualElement EditButtons = new VisualElement();
-            EditButtons.name = "EditButtons";
-            EditButtons.style.flexDirection = FlexDirection.Row;
-            //EditButtons.style.marginLeft = Length.Auto(); // Push the edit buttons to the right end of the row
-            EditButtons.style.position = Position.Absolute; // Position the edit buttons absolutely within the row
-            EditButtons.style.right = 0; // Align the edit buttons to the right edge of the row
+
+            EditButtons = CreateEditModeButton(data);
 
             // Set the visibility of the edit buttons based on the edit mode
             EditButtons.style.display =
                 ToDo.editMode ? DisplayStyle.Flex : DisplayStyle.None;
             deleteButton.style.display =
                 ToDo.editMode ? DisplayStyle.None : DisplayStyle.Flex;
-
-
-            // UP
-            Button button_Up = new Button(() =>
-            {
-                DataMovement.MoveUP(data);
-
-                ToDo.ToDoReloadUI();
-            });
-            button_Up.name = "ButtonUp";
-            button_Up.text = "▲";
-            button_Up = DataHandler.ChangeButtonStyle(button_Up, buttonData);
-
-            // DOWN
-            Button button_Down = new Button(() =>
-            {
-                DataMovement.MoveDOWN(data);
-
-                ToDo.ToDoReloadUI();
-            });
-            button_Down.name = "ButtonDown";
-            button_Down.text = "▼";
-            button_Down = DataHandler.ChangeButtonStyle(button_Down, buttonData);
-
-            // LEFT
-            Button button_Left = new Button(() =>
-            {
-                DataMovement.MoveOutOffFolder(data);
-
-                ToDo.ToDoReloadUI();
-            });
-            button_Left.name = "ButtonLeft";
-            button_Left.text = "◀";
-            button_Left = DataHandler.ChangeButtonStyle(button_Left, buttonData);
-
-            // RIGHT
-            Button button_Right = new Button(() =>
-            {
-                DataMovement.MoveIntoFolder(data);
-
-                ToDo.ToDoReloadUI();
-            });
-            button_Right.name = "ButtonRight";
-            button_Right.text = "▶";
-            button_Right = DataHandler.ChangeButtonStyle(button_Right, buttonData);
-
-            EditButtons.Add(button_Up);
-            EditButtons.Add(button_Down);
-            EditButtons.Add(button_Left);
-            EditButtons.Add(button_Right);
-
 
             root.Add(foldout);
             foldout.Add(childrenContainer);

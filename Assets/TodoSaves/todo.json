@@ -2,7 +2,7 @@
   "name": "Root",
   "description": null,
   "completed": false,
-  "unfolded": false,
+  "unfolded": true,
   "type": 0,
   "children": [
     {
@@ -13,12 +13,21 @@
       "type": 1,
       "children": [
         {
-          "name": "New Task 2",
-          "description": "New Description 2",
+          "name": "New Folder 1",
+          "description": null,
           "completed": false,
-          "unfolded": false,
-          "type": 0,
-          "children": []
+          "unfolded": true,
+          "type": 1,
+          "children": [
+            {
+              "name": "New Task 2",
+              "description": "New Description 2",
+              "completed": false,
+              "unfolded": false,
+              "type": 0,
+              "children": []
+            }
+          ]
         }
       ]
     }

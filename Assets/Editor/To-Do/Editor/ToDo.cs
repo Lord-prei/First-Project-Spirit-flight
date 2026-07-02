@@ -18,6 +18,7 @@ public class ToDo : EditorWindow
 
     private static ItemData tasklistData;
     private static VisualElement TaskList;
+    public static VisualElement root;
 
     [MenuItem("Window/ToDo")] // Add menu item to open the To-Do window
 
@@ -27,7 +28,7 @@ public class ToDo : EditorWindow
         ToDo wnd = GetWindow<ToDo>();               // Get an instance of the To-Do window
         wnd.titleContent = new GUIContent("To-Do"); // Set the title of the window
     }
-    
+
     private void PrintTree(ItemData root)
     {
         var sb = new System.Text.StringBuilder();
@@ -43,7 +44,7 @@ public class ToDo : EditorWindow
 
         sb.AppendLine($"{indent}[Folder] {folder.name}");
 
-        foreach(var child in folder.children)
+        foreach (var child in folder.children)
         {
             if (child.type == NodeType.Task)
             {
@@ -58,7 +59,7 @@ public class ToDo : EditorWindow
 
     public void CreateGUI()
     {
-        VisualElement root = rootVisualElement;
+        root = rootVisualElement;
         root.name = "Root";
 
         tasklistData = new ItemData();
@@ -158,7 +159,7 @@ public class ToDo : EditorWindow
         toggle_EditMode.name = "ToggleEditMode";
         toggle_EditMode.text = "Edit Mode";
         toggle_EditMode.value = false;
-        toggle_EditMode.style.flexGrow = 1;  
+        toggle_EditMode.style.flexGrow = 1;
 
         Button debugTree = new Button(() =>
         {
@@ -244,4 +245,5 @@ public class ToDo : EditorWindow
     {
         UIHandler.ReloadUI(tasklistData, TaskList);
     }
+    
 }
